@@ -57,6 +57,12 @@ Método: lectura completa de `src/`, `firestore.rules`, `app.json`, `package.jso
 | H20 | Al cerrar sesión, la copia local de la lista y del perfil (con foto) queda guardada en el teléfono | `listaService.ts` → `guardarCacheLista` (`cartelera:lista:{uid}`); `perfilService.ts` → `guardarCachePerfil`; `authService.ts` → `cerrarSesion` no las borra | Baja | Riesgo conocido |
 | H21 | `docs/Reglas.md` es una copia manual de `firestore.rules`; hoy son idénticas, pero pueden desincronizarse | `diff -w` entre `firestore.rules` (cuerpo) y `docs/Reglas.md`: sin diferencias | Baja | Riesgo conocido |
 | H22 | En la web, `Alert.alert` con botones no funciona, así que no se puede quitar una obra ni cerrar sesión | `EditarScreen.tsx` → `confirmarEliminar`; `ui.tsx` → `confirmarCerrarSesion`; `package.json` → script `web` | Baja | Fuera de alcance (la app es móvil) |
+| H23 | El comentario puede quedar terminando en espacio si el carácter 500 es un espacio | `src/dominio/reglasLista.ts` → `limpiarCambios` (`trim()` antes de `slice(0, 500)`) | Baja | Riesgo conocido |
+| H24 | `slice` cuenta unidades UTF-16; un emoji en la posición 500 puede quedar partido | `src/dominio/reglasLista.ts` → `limpiarCambios` (`slice(0, 500)`) | Baja | Riesgo conocido |
+
+## Seguimiento
+
+21/11/2026 — Paso 5: H4, H8 y H15 resueltos (Vitest, scripts test/typecheck y limpiarCambios en src/dominio con 8 pruebas).
 
 ## 4. Cierre
 
