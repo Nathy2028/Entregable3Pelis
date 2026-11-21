@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Cinta",
+    "slug": "mi-cartelera",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#D4FF3A",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.w4730.filmjournal",
+      "permissions": []
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-image",
+      "@react-native-vector-icons/lucide",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Cinta usa tus fotos solo para tu imagen de perfil.",
+          "cameraPermission": "Cinta usa la cámara solo para tomar tu foto de perfil.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "backgroundColor": "#0A0A0A"
+        }
+      ]
+    ],
+    "backgroundColor": "#0A0A0A",
+    "extra": {
+      "eas": {
+        "projectId": "f5e2edce-0c83-4c07-b52c-0e8efccc9e79"
+      }
+    },
+    "owner": "w4730"
+  }
+}
