@@ -36,6 +36,8 @@ Copia esta carpeta en `docs/capturas/` del repositorio.
 | 30 | 30-h3-p14-t07b-sonda-segunda-apertura-sin-migrar.png | H3 · Paso 14 · T-07b | Segunda apertura: ya no hay nada que fechar ni completar, sin progreso (CA-A.4.2) |
 | 31 | 31-h3-p15-t08-perfil-normal-con-tokens.png | H3 · Paso 15 · T-08 | Con los tokens de `src/tema/` la app se ve igual que antes (Perfil, modo normal) |
 | 32 | 32-h3-p15-t08-perfil-alto-contraste-con-tokens.png | H3 · Paso 15 · T-08 | Alto contraste desde `PALETA_CONTRASTE`: fondo negro y bordes claros (`borde` #6B6B66) |
+| 33 | 33-h4-p16-t09-mi-anio-tarjetas.png | H4 · Paso 16 · T-09 | Pestaña "Mi año" con 2026 seleccionado, frase del resumen, "Obras vistas" 5 (4 películas y 1 serie), horas con coma, mes top, género y director (CA-A.3.4, CA-A.2.3, CA-A.2.10) |
+| 34 | 34-h4-p16-t09-mi-anio-barras-y-destacada.png | H4 · Paso 16 · T-09 | 12 barras con "Pico: noviembre" y la obra destacada con póster, estrellas y fecha (CA-A.2.25, CA-A.2.27). Al desplazar, el contenido pasaba bajo la barra de estado: se corrigió antes del commit |
 
 Nota: en las capturas 12 y 13 el editor muestra "unpublished changes" porque las dos
 comprobaciones de `request.time` se desactivaron solo en el simulador; no se publicaron.
