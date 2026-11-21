@@ -11,10 +11,16 @@ export function limpiarCambios(cambios: CambiosItem): CambiosItem {
   };
 }
 
-/** D1: qué hacer con vistaEn al guardar un cambio de estado (P5). Pendiente de implementar en T-03. */
+/**
+ * D1: qué hacer con vistaEn al guardar. Entrar a "vista" pone la fecha nueva, salir la quita, y guardar sin
+ * cambiar el estado la conserva (P5). Entre "por ver" y "viendo" sigue en null.
+ */
 export function transicionVistaEn(
   antes: EstadoVisionado,
   despues: EstadoVisionado,
 ): 'poner' | 'quitar' | 'mantener' {
-  throw new Error('no implementado');
+  if (antes === despues) return 'mantener';
+  if (despues === 'vista') return 'poner';
+  if (antes === 'vista') return 'quitar';
+  return 'mantener';
 }
