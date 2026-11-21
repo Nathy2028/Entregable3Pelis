@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CambiosItem } from '../types';
-import { limpiarCambios } from './reglasLista';
+import { limpiarCambios, transicionVistaEn } from './reglasLista';
 
 function cambios(parciales: Partial<CambiosItem>): CambiosItem {
   return { estado: 'vista', calificacionPersonal: null, comentario: '', ...parciales };
@@ -48,5 +48,33 @@ describe('limpiarCambios (RF6)', () => {
 
   it('primero quita los espacios y después recorta a 500', () => {
     expect(limpiarCambios(cambios({ comentario: '   ' + 'a'.repeat(600) })).comentario).toBe('a'.repeat(500));
+  });
+});
+
+describe('transicionVistaEn', () => {
+  it('CA-A.1.1 por ver o viendo a vista: poner', () => {
+    expect(transicionVistaEn('por_ver', 'vista')).toBe('poner');
+    expect(transicionVistaEn('viendo', 'vista')).toBe('poner');
+  });
+
+  it('CA-A.1.2 vista a viendo o por ver: quitar', () => {
+    expect(transicionVistaEn('vista', 'viendo')).toBe('quitar');
+    expect(transicionVistaEn('vista', 'por_ver')).toBe('quitar');
+  });
+
+  it('CA-A.1.3 de viendo otra vez a vista: poner', () => {
+    expect(transicionVistaEn('vista', 'viendo')).toBe('quitar');
+    expect(transicionVistaEn('viendo', 'vista')).toBe('poner');
+  });
+
+  it('CA-A.1.4 vista a vista con otra calificación o comentario: mantener', () => {
+    // El estado no cambia aunque cambien la calificación o el comentario: la transición solo mira el estado.
+    expect(transicionVistaEn('vista', 'vista')).toBe('mantener');
+  });
+
+  it('CA-A.1.5 guardar sin cambiar el estado: mantener', () => {
+    expect(transicionVistaEn('vista', 'vista')).toBe('mantener');
+    expect(transicionVistaEn('viendo', 'viendo')).toBe('mantener');
+    expect(transicionVistaEn('por_ver', 'por_ver')).toBe('mantener');
   });
 });
