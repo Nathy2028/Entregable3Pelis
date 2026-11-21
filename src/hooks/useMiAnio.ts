@@ -20,6 +20,7 @@ export interface MiAnio {
   resumen: ResumenAnual;
   progreso: ProgresoMiAnio | null; // D6 en curso ("Completando 2 de 5")
   sinConexion: boolean;
+  listaVacia: boolean; // no hay ni copia local: sin conexión no se sabe si el año está vacío (P17)
   error: string | null;
   cargando: boolean; // trayendo la lista del servidor y corriendo D2
   reintentar: () => void;
@@ -120,6 +121,7 @@ export function useMiAnio(): MiAnio {
     resumen,
     progreso,
     sinConexion,
+    listaVacia: lista.length === 0,
     error: errorLista ?? errorMigracion,
     cargando,
     reintentar: correr,

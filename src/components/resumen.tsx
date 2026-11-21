@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Lucide, { type LucideIconName } from '@react-native-vector-icons/lucide';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Animated, Easing, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useEstilos, useTema } from '../context/AccesibilidadContext';
-import { etiquetaBarras, fechaDestacada, INICIALES, pico } from '../dominio/textosResumen';
+import { etiquetaBarras, fechaDestacada, INICIALES, pico, progresoTexto } from '../dominio/textosResumen';
 import { radio, type Tema } from '../tema';
 import type { ItemLista } from '../types';
 import { diaYMes } from '../utils/fechas';
 import { Estrellas, Poster } from './obra';
-import { Chip } from './ui';
+import { Boton, Chip } from './ui';
 
 // Componentes de "Mi año en cine" (DESIGN.md, sección 3, "Nuevos de la épica"). Solo tokens de src/tema/.
 
@@ -204,6 +205,116 @@ export function SelectorAnio({
   );
 }
 
+/**
+ * Estado de pantalla: cargando, vacío, error o destacada sin calificar. Título y texto se leen juntos; el botón
+ * (pequeño) tiene su propia etiqueta. `amplio` es el estado vacío del año (relleno 40/20 y 40 arriba).
+ */
+export function EstadoPantalla({
+  titulo,
+  mensaje,
+  icono,
+  indicador,
+  rotulo,
+  accion,
+  variante = 'normal',
+  amplio = false,
+}: {
+  titulo: string;
+  mensaje?: string;
+  icono?: LucideIconName;
+  indicador?: ReactNode; // en lugar del ícono (IndicadorCarga)
+  rotulo?: string;
+  accion?: { titulo: string; onPress: () => void };
+  variante?: 'normal' | 'error';
+  amplio?: boolean;
+}) {
+  const { color, texto } = useTema();
+  const s = useEstilos(estilos);
+  const error = variante === 'error';
+  return (
+    <View style={[s.estado, amplio && s.estadoAmplio]}>
+      {rotulo ? <Text style={[texto.etiqueta, s.estadoRotulo]}>{rotulo}</Text> : null}
+      {indicador ??
+        (icono ? (
+          <View style={[s.estadoIcono, error && s.estadoIconoError]}>
+            <Lucide name={icono} size={24} color={error ? color.peligro : color.acento} />
+          </View>
+        ) : null)}
+      <View
+        style={s.estadoTextos}
+        accessible
+        accessibilityLabel={[titulo, mensaje].filter(Boolean).join('. ')}
+      >
+        <Text style={s.estadoTitulo}>{titulo}</Text>
+        {mensaje ? <Text style={[texto.pequeno, s.estadoMensaje]}>{mensaje}</Text> : null}
+      </View>
+      {accion && <Boton titulo={accion.titulo} onPress={accion.onPress} tamano="pequeno" />}
+    </View>
+  );
+}
+
+/** Círculo que gira en 0,9 s mientras carga; con "reducir movimiento" queda quieto. */
+export function IndicadorCarga() {
+  const { animado } = useTema();
+  const s = useEstilos(estilos);
+  const [giro] = useState(() => new Animated.Value(0));
+
+  useEffect(() => {
+    if (!animado) {
+      giro.setValue(0);
+      return;
+    }
+    const vuelta = Animated.loop(
+      Animated.timing(giro, { toValue: 1, duration: 900, easing: Easing.linear, useNativeDriver: true }),
+    );
+    vuelta.start();
+    return () => vuelta.stop();
+  }, [animado, giro]);
+
+  const rotacion = giro.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
+  return (
+    <Animated.View
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel="Cargando"
+      style={[s.indicador, { transform: [{ rotate: rotacion }] }]}
+    />
+  );
+}
+
+/** Progreso de D6: "Completando 2 de 5 obras. Ya casi." con una barra de alto 8. */
+export function BarraProgreso({ hechas, total }: { hechas: number; total: number }) {
+  const s = useEstilos(estilos);
+  const texto = progresoTexto(hechas, total);
+  return (
+    <View
+      style={s.progreso}
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={`Completando datos de TMDB. ${texto}`}
+      accessibilityValue={{ min: 0, max: total, now: hechas }}
+    >
+      <Text style={s.progresoTitulo}>Completando datos de TMDB</Text>
+      <Text style={s.progresoTexto}>{texto}</Text>
+      <View style={s.progresoPista}>
+        <View style={[s.progresoRelleno, { width: `${total > 0 ? (hechas / total) * 100 : 0}%` }]} />
+      </View>
+    </View>
+  );
+}
+
+/** Aviso informativo arriba del resumen (sin conexión, obras sin fecha, datos faltantes). Se lee completo. */
+export function Aviso({ icono, texto: t }: { icono: LucideIconName; texto: string }) {
+  const { color } = useTema();
+  const s = useEstilos(estilos);
+  return (
+    <View style={s.aviso} accessible accessibilityLabel={t}>
+      <Lucide name={icono} size={18} color={color.acento} />
+      <Text style={s.avisoTexto}>{t}</Text>
+    </View>
+  );
+}
+
 const estilos = ({ color }: Tema) =>
   StyleSheet.create({
     // Tarjeta de dato
@@ -280,4 +391,72 @@ const estilos = ({ color }: Tema) =>
 
     // Selector de año
     selector: { gap: 8 },
+
+    // Estado de pantalla
+    estado: {
+      backgroundColor: color.superficie,
+      borderWidth: 1,
+      borderColor: color.borde,
+      borderRadius: radio.l,
+      paddingVertical: 24,
+      paddingHorizontal: 20,
+      alignItems: 'center',
+      gap: 10,
+    },
+    estadoAmplio: { paddingVertical: 40, marginTop: 28 }, // 40 arriba = 28 + la separación de 12 entre bloques
+    estadoRotulo: { alignSelf: 'flex-start' },
+    estadoIcono: {
+      width: 52,
+      height: 52,
+      borderRadius: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: color.acentoSuave,
+    },
+    estadoIconoError: { backgroundColor: color.peligroSuave },
+    estadoTextos: { alignItems: 'center', gap: 4 },
+    estadoTitulo: { color: color.texto, fontSize: 16, fontWeight: '600', textAlign: 'center' },
+    estadoMensaje: { textAlign: 'center', maxWidth: 260 },
+
+    // Indicador de carga
+    indicador: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      borderWidth: 3,
+      borderColor: color.superficieAlta,
+      borderTopColor: color.acento,
+    },
+
+    // Barra de progreso
+    progreso: {
+      backgroundColor: color.superficie,
+      borderWidth: 1,
+      borderColor: color.borde,
+      borderRadius: radio.l,
+      padding: 18,
+      gap: 6,
+    },
+    progresoTitulo: { color: color.texto, fontSize: 15, fontWeight: '600' },
+    progresoTexto: { color: color.textoSecundario, fontSize: 13, lineHeight: 18 },
+    progresoPista: {
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: color.superficieAlta,
+      overflow: 'hidden',
+      marginTop: 6,
+    },
+    progresoRelleno: { height: 8, backgroundColor: color.acento },
+
+    // Aviso
+    aviso: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      backgroundColor: color.acentoSuave,
+      borderRadius: radio.m,
+      paddingVertical: 12,
+      paddingHorizontal: 14,
+    },
+    avisoTexto: { flex: 1, color: color.texto, fontSize: 13, lineHeight: 18 },
   });

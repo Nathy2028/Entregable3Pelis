@@ -54,6 +54,22 @@ export const pico = (indice: number) => `Pico: ${mes(indice)}`;
 export const etiquetaBarras = (obrasPorMes: readonly number[]) =>
   `Obras vistas por mes: ${obrasPorMes.map((n, i) => `${mes(i)} ${n}`).join(', ')}`;
 
+/** Aviso de datos faltantes (D6): "2 obras se quedaron sin datos de TMDB, así que no cuentan en horas, …". */
+export const avisoDatosFaltantes = (n: number) =>
+  n === 1
+    ? '1 obra se quedó sin datos de TMDB, así que no cuenta en horas, género ni director.'
+    : `${n} obras se quedaron sin datos de TMDB, así que no cuentan en horas, género ni director.`;
+
+/** Aviso de obras vistas sin fecha, sin conexión (P3): "3 obras vistas todavía no tienen fecha; …". */
+export const avisoSinFecha = (n: number) =>
+  n === 1
+    ? '1 obra vista todavía no tiene fecha; se suma cuando vuelvas a tener conexión.'
+    : `${n} obras vistas todavía no tienen fecha; se suman cuando vuelvas a tener conexión.`;
+
+/** Progreso de D6: "Completando 2 de 5 obras. Ya casi." */
+export const progresoTexto = (hechas: number, total: number) =>
+  `Completando ${hechas} de ${contar(total, 'obra')}. Ya casi.`;
+
 /** "Película · vista el 12 de octubre". `diaYMes` llega armado ("12 de octubre"): el dominio no lee fechas. */
 export const fechaDestacada = (tipo: TipoObra, diaYMes: string) =>
   `${tipo === 'movie' ? 'Película' : 'Serie'} · vista el ${diaYMes}`;

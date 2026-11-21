@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   apoyoObrasVistas,
+  avisoDatosFaltantes,
+  avisoSinFecha,
+  progresoTexto,
   contar,
   etiquetaBarras,
   fechaDestacada,
@@ -49,6 +52,29 @@ describe('textos de Mi año en cine', () => {
     );
     expect(MESES).toHaveLength(12);
     expect(INICIALES.join(' ')).toBe('E F M A M J J A S O N D');
+  });
+
+  it('CA-A.5.9 aviso de datos faltantes, plural y singular', () => {
+    expect(avisoDatosFaltantes(2)).toBe(
+      '2 obras se quedaron sin datos de TMDB, así que no cuentan en horas, género ni director.',
+    );
+    expect(avisoDatosFaltantes(1)).toBe(
+      '1 obra se quedó sin datos de TMDB, así que no cuenta en horas, género ni director.',
+    );
+  });
+
+  it('CA-A.5.5 aviso de obras vistas sin fecha, plural y singular', () => {
+    expect(avisoSinFecha(3)).toBe(
+      '3 obras vistas todavía no tienen fecha; se suman cuando vuelvas a tener conexión.',
+    );
+    expect(avisoSinFecha(1)).toBe(
+      '1 obra vista todavía no tiene fecha; se suma cuando vuelvas a tener conexión.',
+    );
+  });
+
+  it('CA-A.4.6 texto del progreso, plural y singular', () => {
+    expect(progresoTexto(2, 5)).toBe('Completando 2 de 5 obras. Ya casi.');
+    expect(progresoTexto(1, 1)).toBe('Completando 1 de 1 obra. Ya casi.');
   });
 
   it('CA-A.2.27 fecha de la obra destacada', () => {

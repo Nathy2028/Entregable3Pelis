@@ -56,6 +56,7 @@ export function Boton({
   icono,
   cargando = false,
   deshabilitado = false,
+  tamano = 'normal',
 }: {
   titulo: string;
   onPress: () => void;
@@ -63,6 +64,7 @@ export function Boton({
   icono?: LucideIconName;
   cargando?: boolean;
   deshabilitado?: boolean;
+  tamano?: 'normal' | 'pequeno';
 }) {
   const { color } = useTema();
   const s = useEstilos(estilos);
@@ -85,6 +87,7 @@ export function Boton({
       onPress={onPress}
       style={({ pressed }) => [
         s.boton,
+        tamano === 'pequeno' && s.botonPequeno,
         primario ? s.botonPrimario : s.botonSecundario,
         primario && !inactivo && s.brillo,
         deshabilitado && (primario ? s.primarioInactivo : s.inactivo),
@@ -96,7 +99,9 @@ export function Boton({
       ) : (
         <>
           {icono && <Lucide name={icono} size={18} color={tinta} />}
-          <Text style={[s.botonTexto, { color: tinta }]}>{titulo}</Text>
+          <Text style={[s.botonTexto, tamano === 'pequeno' && s.botonTextoPequeno, { color: tinta }]}>
+            {titulo}
+          </Text>
         </>
       )}
     </Pressable>
@@ -186,7 +191,10 @@ export function Etiqueta({ texto: t, tono = 'suave' }: { texto: string; tono?: T
   const tonos: Record<Tono, { fondo: ViewStyle; tinta: string }> = {
     acento: { fondo: { backgroundColor: color.acento }, tinta: color.sobreAcento },
     suave: { fondo: { backgroundColor: color.acentoSuave }, tinta: color.acento },
-    contorno: { fondo: { backgroundColor: color.velo, borderColor: 'rgba(212, 255, 58, 0.4)' }, tinta: color.acento },
+    contorno: {
+      fondo: { backgroundColor: color.velo, borderColor: 'rgba(212, 255, 58, 0.4)' },
+      tinta: color.acento,
+    },
     neutro: { fondo: { backgroundColor: color.superficieAlta }, tinta: color.textoSecundario },
   };
   return (
@@ -285,7 +293,13 @@ export function EstadoVacio({
   );
 }
 
-export function AvisoSinConexion({ onReintentar, cargando }: { onReintentar: () => void; cargando: boolean }) {
+export function AvisoSinConexion({
+  onReintentar,
+  cargando,
+}: {
+  onReintentar: () => void;
+  cargando: boolean;
+}) {
   const { color, texto } = useTema();
   const s = useEstilos(estilos);
   return (
@@ -317,7 +331,15 @@ export function Marca() {
 }
 
 /** Foto del proyector que se funde con el fondo, con un distintivo centrado. */
-export function Hero({ etiqueta, alto, style }: { etiqueta?: string; alto: number; style?: StyleProp<ViewStyle> }) {
+export function Hero({
+  etiqueta,
+  alto,
+  style,
+}: {
+  etiqueta?: string;
+  alto: number;
+  style?: StyleProp<ViewStyle>;
+}) {
   const s = useEstilos(estilos);
   return (
     <View style={[{ height: alto }, s.hero, style]}>
@@ -333,7 +355,15 @@ export function Hero({ etiqueta, alto, style }: { etiqueta?: string; alto: numbe
 }
 
 /** Foto de perfil o, si no hay, las iniciales. */
-export function Avatar({ foto, iniciales, tamano }: { foto: string | null | undefined; iniciales: string; tamano: number }) {
+export function Avatar({
+  foto,
+  iniciales,
+  tamano,
+}: {
+  foto: string | null | undefined;
+  iniciales: string;
+  tamano: number;
+}) {
   const { transicion } = useTema();
   const s = useEstilos(estilos);
   const forma = { width: tamano, height: tamano, borderRadius: tamano / 2 };
@@ -493,6 +523,8 @@ const estilos = ({ color }: Tema) =>
       justifyContent: 'center',
       gap: 8,
     },
+    botonPequeno: { minHeight: TOQUE, paddingHorizontal: 16 }, // DESIGN.md: alto 44, 14, relleno 16
+    botonTextoPequeno: { fontSize: 14 },
     botonPrimario: { backgroundColor: color.acento },
     primarioInactivo: { backgroundColor: color.superficieAlta },
     botonSecundario: { backgroundColor: color.superficie, borderWidth: 1, borderColor: color.borde },
@@ -607,7 +639,13 @@ const estilos = ({ color }: Tema) =>
       borderWidth: 1,
       borderColor: color.borde,
     },
-    avisoBoton: { minHeight: TOQUE, minWidth: 96, paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center' },
+    avisoBoton: {
+      minHeight: TOQUE,
+      minWidth: 96,
+      paddingHorizontal: 14,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     avisoBotonTexto: { color: color.acento, fontWeight: '700', fontSize: 14 },
 
     marca: { flexDirection: 'row', alignItems: 'center', gap: 10 },
