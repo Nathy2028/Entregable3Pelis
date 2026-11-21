@@ -62,7 +62,22 @@ npx expo lint        # lint
 
 Antes de crear o modificar cualquier archivo en src/screens/ o src/components/, lee DESIGN.md.
 
-## 8. Expo cambia entre versiones
+## 8. Tests en rojo esperados
+
+Un sensor nunca se desactiva, se salta ni se borra. Solo se permite hacer commit con tests en rojo en estos dos
+casos, y solo con confirmación de la usuaria:
+
+- **a)** El test de colores fijos (`src/tema/coloresFijos.test.ts`), desde su creación hasta el ticket T-11 del
+  backlog (Hito 4), siempre que solo falle por archivos que ya tenían colores fijos. Esos archivos son:
+  `src/theme.ts`, `src/components/ui.tsx`, `src/context/AccesibilidadContext.tsx`, `src/screens/BuscarScreen.tsx`
+  y `src/screens/EditarScreen.tsx`. Si el test marca cualquier otro archivo, no aplica este caso.
+- **b)** El commit `test:` del Paso 12 (tests del dominio antes de implementar), solo con los tests nuevos de ese
+  paso en rojo.
+
+Cualquier otro test en rojo bloquea el commit. El mensaje del commit debe decir en el cuerpo qué tests quedan en
+rojo y por qué.
+
+## 9. Expo cambia entre versiones
 
 Expo introduce cambios incompatibles en cada versión del SDK, así que las APIs que recuerdes pueden
 tener otro nombre, estar en otro lugar o no existir. Antes de usar una API de Expo, consulta la
