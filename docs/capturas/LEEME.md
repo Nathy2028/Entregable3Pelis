@@ -34,6 +34,8 @@ Copia esta carpeta en `docs/capturas/` del repositorio.
 | 28 | 28-h3-p14-t07b-sonda-progreso-d6.png | H3 · Paso 14 · T-07b | Sonda temporal: progreso de D6 "0 de 2 → 1 de 2 → null"; `obrasSinDatos` 2 → 0 y `obrasSinFecha` 3 → 0 (CA-A.4.6) |
 | 29 | 29-h3-p14-t07b-d2-vistaen-igual-actualizadoen.png | H3 · Paso 14 · T-07b | Después: Interestelar con `vistaEn` = su `actualizadoEn` anterior (5:41:51 PM) y `actualizadoEn` nuevo (CA-A.4.1, CA-A.4.5) |
 | 30 | 30-h3-p14-t07b-sonda-segunda-apertura-sin-migrar.png | H3 · Paso 14 · T-07b | Segunda apertura: ya no hay nada que fechar ni completar, sin progreso (CA-A.4.2) |
+| 31 | 31-h3-p15-t08-perfil-normal-con-tokens.png | H3 · Paso 15 · T-08 | Con los tokens de `src/tema/` la app se ve igual que antes (Perfil, modo normal) |
+| 32 | 32-h3-p15-t08-perfil-alto-contraste-con-tokens.png | H3 · Paso 15 · T-08 | Alto contraste desde `PALETA_CONTRASTE`: fondo negro y bordes claros (`borde` #6B6B66) |
 
 Nota: en las capturas 12 y 13 el editor muestra "unpublished changes" porque las dos
 comprobaciones de `request.time` se desactivaron solo en el simulador; no se publicaron.
