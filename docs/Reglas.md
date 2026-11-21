@@ -55,11 +55,12 @@ match /nombresUsuario/{usuario} {
 
 // ---------- Mi lista: usuarios/{uid}/mi_lista/{itemId} ----------
 
-// Reglas de negocio que también valida el servidor (RF4, RF6).
+// Reglas de negocio que también valida el servidor (RF4, RF6, épica Mi año en cine).
 function itemValido() {
   let d = request.resource.data;
   return d.keys().hasOnly(['tmdbId', 'tipo', 'titulo', 'anio', 'posterPath', 'estado',
-                           'calificacionPersonal', 'comentario', 'agregadoEn', 'actualizadoEn'])
+                           'calificacionPersonal', 'comentario', 'agregadoEn', 'actualizadoEn',
+                           'vistaEn', 'generos', 'duracionMin', 'directores'])
     && d.tmdbId is int
     && d.tipo in ['movie', 'tv']
     && d.titulo is string && d.titulo.size() <= 300
@@ -70,6 +71,12 @@ function itemValido() {
     && (d.calificacionPersonal == null
         || (d.estado == 'vista' && d.calificacionPersonal is int
             && d.calificacionPersonal >= 1 && d.calificacionPersonal <= 5))
+    // vistaEn: solo si la obra está vista
+    && (d.get('vistaEn', null) == null || (d.estado == 'vista' && d.vistaEn is timestamp))
+    && (d.get('generos', []) is list && d.get('generos', []).size() <= 10)
+    && (d.get('duracionMin', null) == null
+        || (d.duracionMin is int && d.duracionMin > 0 && d.duracionMin <= 1000))
+    && (d.get('directores', []) is list && d.get('directores', []).size() <= 10)
     && d.actualizadoEn == request.time;
 }
 
