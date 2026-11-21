@@ -146,6 +146,11 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
         comentario: '',
         agregadoEn: ahora,
         actualizadoEn: ahora,
+        // Hasta T-05 se agrega sin datos de TMDB; D6 los completa al abrir el resumen.
+        vistaEn: null,
+        generos: null,
+        duracionMin: null,
+        directores: null,
       };
       await mutar([item, ...listaRef.current], (u) => listaService.agregar(u, obra));
     },

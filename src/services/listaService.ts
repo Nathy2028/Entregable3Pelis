@@ -7,11 +7,10 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  Timestamp,
   updateDoc,
-  type QueryDocumentSnapshot,
-  type Timestamp,
 } from 'firebase/firestore';
-import type { CambiosItem, ItemLista, Obra, TipoObra } from '../types';
+import type { CambiosItem, EstadoVisionado, ItemLista, Obra, TipoObra } from '../types';
 import { guardarCache, leerCache } from './cache';
 import { conTiempoMaximo, db } from './firebase';
 
@@ -29,28 +28,47 @@ export const soloObra = ({ tmdbId, tipo, titulo, anio, posterPath }: Obra): Obra
   posterPath,
 });
 
-const aMs = (t: Timestamp | null | undefined) => t?.toMillis() ?? Date.now();
+/** Timestamp de Firestore o milisegundos de la copia local → ms. Si falta, null: no se inventa la fecha (H9). */
+function aMs(t: unknown): number | null {
+  if (t instanceof Timestamp) return t.toMillis();
+  return typeof t === 'number' && Number.isFinite(t) ? t : null;
+}
 
-function aItem(snap: QueryDocumentSnapshot): ItemLista {
-  const d = snap.data({ serverTimestamps: 'estimate' });
+const ESTADOS: readonly EstadoVisionado[] = ['por_ver', 'viendo', 'vista'];
+const texto = (v: unknown, otro = ''): string => (typeof v === 'string' ? v : otro);
+const numero = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+const listaDeTexto = (v: unknown): string[] | null =>
+  Array.isArray(v) && v.every((x) => typeof x === 'string') ? v : null;
+
+/**
+ * Convierte un documento de Firestore o una entrada de la copia de AsyncStorage en ItemLista.
+ * Los documentos y copias de antes de la épica no tienen los campos nuevos: se leen como null.
+ * Si falta `generos`, la obra nunca se completó desde TMDB (P9) y sus tres datos quedan en null.
+ */
+export function normalizarItem(crudo: Record<string, unknown>): ItemLista {
+  const generos = listaDeTexto(crudo.generos);
   return {
-    id: snap.id,
-    tmdbId: d.tmdbId,
-    tipo: d.tipo,
-    titulo: d.titulo,
-    anio: d.anio,
-    posterPath: d.posterPath ?? null,
-    estado: d.estado,
-    calificacionPersonal: d.calificacionPersonal ?? null,
-    comentario: d.comentario ?? '',
-    agregadoEn: aMs(d.agregadoEn),
-    actualizadoEn: aMs(d.actualizadoEn),
+    id: texto(crudo.id),
+    tmdbId: numero(crudo.tmdbId) ?? 0,
+    tipo: crudo.tipo === 'tv' ? 'tv' : 'movie',
+    titulo: texto(crudo.titulo, 'Sin título'),
+    anio: texto(crudo.anio),
+    posterPath: typeof crudo.posterPath === 'string' ? crudo.posterPath : null,
+    estado: ESTADOS.find((e) => e === crudo.estado) ?? 'por_ver',
+    calificacionPersonal: numero(crudo.calificacionPersonal),
+    comentario: texto(crudo.comentario),
+    agregadoEn: aMs(crudo.agregadoEn),
+    actualizadoEn: aMs(crudo.actualizadoEn),
+    vistaEn: aMs(crudo.vistaEn),
+    generos,
+    duracionMin: generos ? numero(crudo.duracionMin) : null,
+    directores: generos ? (listaDeTexto(crudo.directores) ?? []) : null,
   };
 }
 
 export async function obtener(uid: string): Promise<ItemLista[]> {
   const snap = await conTiempoMaximo(getDocs(query(coleccion(uid), orderBy('agregadoEn', 'desc'))));
-  return snap.docs.map(aItem);
+  return snap.docs.map((d) => normalizarItem({ ...d.data({ serverTimestamps: 'estimate' }), id: d.id }));
 }
 
 export async function agregar(uid: string, obra: Obra): Promise<void> {
@@ -79,5 +97,13 @@ export async function eliminar(uid: string, itemId: string): Promise<void> {
 // ---------- Copia local (RF8) ----------
 
 const claveCache = (uid: string) => `cartelera:lista:${uid}`;
-export const leerCacheLista = (uid: string) => leerCache<ItemLista[]>(claveCache(uid));
+/** La copia puede ser de antes de la épica: cada entrada pasa por normalizarItem. */
+export async function leerCacheLista(uid: string): Promise<ItemLista[] | null> {
+  const copia = await leerCache<unknown>(claveCache(uid));
+  if (!Array.isArray(copia)) return null;
+  return copia
+    .filter((x): x is Record<string, unknown> => typeof x === 'object' && x !== null)
+    .map(normalizarItem)
+    .filter((item) => item.id !== '');
+}
 export const guardarCacheLista = (uid: string, lista: ItemLista[]) => guardarCache(claveCache(uid), lista);

@@ -40,14 +40,25 @@ export interface DetalleObra extends Obra {
   trailerKey: string | null; // clave de YouTube
 }
 
+/** Datos de TMDB que se guardan en cada obra para el resumen anual (D5). Se escriben siempre juntos. */
+export interface DatosTmdb {
+  generos: string[]; // nombres en español, máximo 10
+  duracionMin: number | null; // solo películas; null en series o sin dato
+  directores: string[]; // solo películas; vacía en series
+}
+
 /** Documento de usuarios/{uid}/mi_lista/{itemId}. Las fechas van en milisegundos para poder cachearlas en JSON. */
 export interface ItemLista extends Obra {
   id: string; // itemId = `${tipo}_${tmdbId}`
   estado: EstadoVisionado;
   calificacionPersonal: number | null; // 1–5, solo si estado === 'vista'
   comentario: string; // hasta 500 caracteres
-  agregadoEn: number;
-  actualizadoEn: number;
+  agregadoEn: number | null; // null si el documento no la tiene (H9)
+  actualizadoEn: number | null; // null si el documento no la tiene (H9)
+  vistaEn: number | null; // cuándo pasó a vista (D1, D2); null si no está vista o aún no se migró
+  generos: string[] | null; // null = nunca se completó desde TMDB (P9)
+  duracionMin: number | null;
+  directores: string[] | null; // null cuando generos es null
 }
 
 export type CambiosItem = Pick<ItemLista, 'estado' | 'calificacionPersonal' | 'comentario'>;
@@ -105,6 +116,6 @@ export interface TmdbDetalle extends Omit<TmdbResultado, 'media_type'> {
   genres: { id: number; name: string }[];
   runtime?: number;
   number_of_seasons?: number;
-  credits?: { cast: TmdbMiembroElenco[] };
+  credits?: { cast: TmdbMiembroElenco[]; crew?: { name: string; job: string }[] };
   videos?: { results: { key: string; site: string; type: string }[] };
 }
