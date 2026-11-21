@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand board · Cinta · Mi año en cine</title>
+<style>
+  /* ===== Tokens (mismos nombres que src/tema/) ===== */
+  :root {
+    --fondo: #0A0A0A;
+    --superficie: #131313;
+    --superficieAlta: #1B1B1B;
+    --borde: #262626;
+    --texto: #F4F4F1;
+    --textoSecundario: #A3A3A0;
+    --textoTenue: #8A8A86;
+    --estrellaVacia: #4A4A47;
+    --acento: #D4FF3A;
+    --sobreAcento: #0A0A0A;
+    --acentoSuave: rgba(212, 255, 58, 0.12);
+    --peligro: #FF7A6B;
+    --peligroSuave: rgba(255, 122, 107, 0.12);
+    --velo: rgba(10, 10, 10, 0.62);
+    --barraInactiva: #3A3D2E;
+
+    --r-s: 10px; --r-m: 14px; --r-l: 20px;
+    --e1: 4px; --e2: 8px; --e3: 12px; --e4: 16px; --e5: 20px; --e6: 24px; --e7: 32px;
+    --toque: 44px;
+    --fuente: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  body.contraste {
+    --fondo: #000000;
+    --superficie: #0D0D0D;
+    --superficieAlta: #1F1F1F;
+    --borde: #6B6B66;
+    --textoSecundario: #E6E6E2;
+    --textoTenue: #CFCFCA;
+    --estrellaVacia: #8A8A86;
+    --acentoSuave: rgba(212, 255, 58, 0.22);
+    --peligro: #FF9C90;
+    --peligroSuave: rgba(255, 156, 144, 0.16);
+    --velo: rgba(0, 0, 0, 0.85);
+    --barraInactiva: #5A5E47;
+  }
+
+  /* ===== Página ===== */
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font-family: var(--fuente); line-height: 1.45; }
+  .pagina { max-width: 1120px; margin: 0 auto; padding: 48px 24px 96px; }
+  header.portada { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; padding-bottom: 32px; border-bottom: 1px solid var(--borde); }
+  .portada h1 { font-size: 44px; font-weight: 800; letter-spacing: -1.2px; margin: 8px 0 4px; }
+  .portada p { color: var(--textoSecundario); margin: 0; max-width: 560px; }
+  .interruptor { min-height: var(--toque); padding: 0 18px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--texto); font: 600 14px var(--fuente); cursor: pointer; }
+  .interruptor[aria-pressed="true"] { background: var(--acento); color: var(--sobreAcento); border-color: var(--acento); }
+  nav.indice { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0 8px; }
+  nav.indice a { color: var(--textoSecundario); text-decoration: none; font-size: 13px; padding: 6px 12px; border: 1px solid var(--borde); border-radius: 999px; }
+  nav.indice a:hover { color: var(--acento); border-color: var(--acento); }
+  section.bloque { padding: 56px 0 8px; }
+  .num { color: var(--acento); font-size: 11px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; }
+  section.bloque > h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.6px; margin: 6px 0 6px; }
+  section.bloque > p.intro { color: var(--textoSecundario); margin: 0 0 24px; max-width: 720px; }
+  h3 { font-size: 16px; font-weight: 600; margin: 28px 0 12px; }
+  .nota { color: var(--textoTenue); font-size: 13px; }
+  .nuevo { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--sobreAcento); background: var(--acento); border-radius: 6px; padding: 2px 6px; margin-left: 6px; vertical-align: middle; }
+  .rejilla { display: grid; gap: 16px; }
+  .r2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .r3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .lamina { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-l); padding: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; color: var(--textoTenue); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .6px; padding: 8px 10px; border-bottom: 1px solid var(--borde); }
+  td { padding: 10px; border-bottom: 1px solid var(--borde); vertical-align: middle; }
+  code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 12.5px; color: var(--texto); background: var(--superficieAlta); padding: 2px 6px; border-radius: 6px; }
+
+  /* ===== 1. Marca ===== */
+  .marca-fila { display: flex; align-items: center; gap: 20px; }
+  .wordmark { font-size: 56px; font-weight: 800; letter-spacing: -2px; }
+  .wordmark span { color: var(--acento); }
+  .atribucion { display: flex; align-items: center; gap: 10px; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--borde); }
+  .tmdb-marca { font-size: 10px; font-weight: 800; letter-spacing: .5px; color: var(--textoTenue); border: 1px solid var(--borde); border-radius: 4px; padding: 2px 5px; }
+  .atribucion p { margin: 0; font-size: 11px; color: var(--textoTenue); }
+
+  /* ===== 2. Color ===== */
+  .muestra { display: flex; gap: 12px; align-items: center; }
+  .chip-color { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--borde); flex-shrink: 0; }
+  .par { border-radius: var(--r-m); padding: 16px; border: 1px solid var(--borde); }
+  .par strong { display: block; font-size: 15px; }
+  .par .ratio { font-size: 12px; font-weight: 700; margin-top: 6px; }
+  .ok::before { content: "✓ "; }
+
+  /* ===== 3. Tipografía ===== */
+  .t-display { font-size: 32px; font-weight: 800; letter-spacing: -0.8px; }
+  .t-dato { font-size: 48px; font-weight: 800; letter-spacing: -1.5px; font-variant-numeric: tabular-nums; line-height: 1; }
+  .t-titulo { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .t-subtitulo { font-size: 16px; font-weight: 600; }
+  .t-cuerpo { font-size: 15px; line-height: 22px; color: var(--textoSecundario); }
+  .t-pequeno { font-size: 13px; line-height: 18px; color: var(--textoSecundario); }
+  .t-etiqueta { font-size: 11px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; color: var(--acento); }
+
+  /* ===== 4. Espacio ===== */
+  .regla { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+  .regla div { text-align: center; font-size: 12px; color: var(--textoTenue); }
+  .regla i { display: block; background: var(--acento); margin: 0 auto 8px; border-radius: 2px; }
+  .radios { display: flex; gap: 18px; }
+  .radios div { width: 72px; height: 72px; background: var(--superficieAlta); border: 1px solid var(--borde); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--textoSecundario); }
+  .toque-demo { position: relative; width: 44px; height: 44px; border: 1px dashed var(--acento); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+  /* ===== 5. Componentes (los mismos que arman la maqueta) ===== */
+  .c-boton { min-height: 52px; border-radius: var(--r-m); border: 0; padding: 0 20px; font: 700 16px var(--fuente); display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+  .c-boton.primario { background: var(--acento); color: var(--sobreAcento); }
+  .c-boton.secundario { background: var(--superficieAlta); color: var(--texto); border: 1px solid var(--borde); }
+  .c-boton.peligro { background: transparent; color: var(--peligro); border: 1px solid var(--peligro); }
+  .c-boton.pequeno { min-height: 44px; font-size: 14px; padding: 0 16px; }
+  .c-etiqueta { display: inline-flex; align-items: center; min-height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .c-etiqueta.vista { background: var(--acento); color: var(--sobreAcento); }
+  .c-etiqueta.viendo { background: var(--acentoSuave); color: var(--acento); }
+  .c-etiqueta.porver { background: var(--superficieAlta); color: var(--textoSecundario); border: 1px solid var(--borde); }
+  .c-segmentos { display: flex; background: var(--superficieAlta); border: 1px solid var(--borde); border-radius: var(--r-m); padding: 4px; gap: 4px; }
+  .c-segmentos button { flex: 1; min-height: 44px; border: 0; border-radius: var(--r-s); background: transparent; color: var(--textoSecundario); font: 600 14px var(--fuente); }
+  .c-segmentos button.activo { background: var(--acento); color: var(--sobreAcento); }
+  .c-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .c-chip { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--borde); background: var(--superficie); color: var(--textoSecundario); font: 600 14px var(--fuente); }
+  .c-chip.activo { background: var(--acento); border-color: var(--acento); color: var(--sobreAcento); }
+  .c-estrellas { display: flex; gap: 2px; }
+  .c-estrellas svg { width: 18px; height: 18px; }
+  .c-estrellas .llena { fill: var(--acento); }
+  .c-estrellas .vacia { fill: var(--estrellaVacia); }
+  .c-poster { border-radius: var(--r-s); background: linear-gradient(160deg, #2b3a1a 0%, #141414 55%, #0a0a0a 100%); display: flex; align-items: flex-end; padding: 8px; font-size: 11px; font-weight: 700; color: var(--texto); border: 1px solid var(--borde); overflow: hidden; }
+  .c-poster.p2 { background: linear-gradient(160deg, #3a1d2a 0%, #151515 60%, #0a0a0a 100%); }
+  .c-poster.p3 { background: linear-gradient(160deg, #1a2a3a 0%, #141414 60%, #0a0a0a 100%); }
+  .c-poster.vacio { background: var(--superficieAlta); color: var(--textoTenue); justify-content: center; align-items: center; font-weight: 600; }
+  .c-tarjeta-obra { display: flex; gap: 12px; background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-m); padding: 12px; }
+  .c-tarjeta-obra .c-poster { width: 56px; height: 84px; flex-shrink: 0; }
+  .c-tarjeta-obra h4 { margin: 2px 0 2px; font-size: 16px; font-weight: 600; }
+  .c-tarjeta-obra p { margin: 0 0 8px; font-size: 13px; color: var(--textoTenue); }
+  .c-aviso { display: flex; gap: 10px; align-items: center; background: var(--acentoSuave); border-radius: var(--r-m); padding: 12px 14px; font-size: 13px; color: var(--texto); }
+  .c-aviso svg { flex-shrink: 0; stroke: var(--acento); }
+  .c-aviso.error { background: var(--peligroSuave); }
+  .c-aviso.error svg { stroke: var(--peligro); }
+
+  /* Nuevos de la épica */
+  .c-dato { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-l); padding: 18px; }
+  .c-dato .t-etiqueta { display: block; margin-bottom: 10px; }
+  .c-dato .valor { font-size: 48px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .c-dato .valor small { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; margin-left: 2px; color: var(--textoSecundario); }
+  .c-dato .valor.texto { font-size: 26px; letter-spacing: -0.5px; line-height: 1.1; }
+  .c-dato .apoyo { margin-top: 8px; font-size: 13px; color: var(--textoSecundario); }
+  .c-dato .falta { margin-top: 10px; font-size: 12px; color: var(--textoTenue); display: flex; gap: 6px; align-items: center; }
+  .c-barras { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-l); padding: 18px; }
+  .c-barras .cabeza { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+  .c-barras .cabeza strong { font-size: 15px; font-weight: 600; }
+  .c-barras .area { display: flex; align-items: flex-end; gap: 6px; height: 120px; }
+  .c-barras .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+  .c-barras .barra { width: 100%; background: var(--barraInactiva); border-radius: 6px 6px 3px 3px; min-height: 3px; }
+  .c-barras .col.top .barra { background: var(--acento); }
+  .c-barras .mes { font-size: 11px; color: var(--textoTenue); font-weight: 600; }
+  .c-barras .col.top .mes { color: var(--acento); }
+  .c-barras .cifra { font-size: 11px; color: var(--acento); font-weight: 700; }
+  .c-destacada { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-l); overflow: hidden; }
+  .c-destacada .c-poster { height: 190px; border-radius: 0; border: 0; padding: 16px; align-items: flex-end; font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+  .c-destacada .cuerpo { padding: 16px 18px 18px; }
+  .c-destacada .cuerpo p { margin: 6px 0 0; font-size: 13px; color: var(--textoSecundario); }
+  .c-anios { display: flex; gap: 8px; overflow-x: auto; }
+  .c-estado { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--r-l); padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .c-estado .icono { width: 52px; height: 52px; border-radius: 16px; background: var(--acentoSuave); display: flex; align-items: center; justify-content: center; }
+  .c-estado .icono svg { stroke: var(--acento); }
+  .c-estado.err .icono { background: var(--peligroSuave); }
+  .c-estado.err .icono svg { stroke: var(--peligro); }
+  .c-estado strong { font-size: 16px; }
+  .c-estado p { margin: 0; font-size: 13px; color: var(--textoSecundario); max-width: 260px; }
+  .c-giro { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--superficieAlta); border-top-color: var(--acento); animation: giro 0.9s linear infinite; }
+  @keyframes giro { to { transform: rotate(360deg); } }
+  body.contraste .c-giro { animation-duration: 0s; }
+  .c-progreso { width: 100%; height: 8px; background: var(--superficieAlta); border-radius: 999px; overflow: hidden; }
+  .c-progreso i { display: block; height: 100%; width: 40%; background: var(--acento); border-radius: 999px; }
+  .c-pestanas { display: flex; justify-content: space-around; background: var(--superficie); border-top: 1px solid var(--borde); padding: 8px 6px 22px; }
+  .c-pestanas div { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 64px; min-height: 44px; font-size: 11px; font-weight: 600; color: var(--textoTenue); }
+  .c-pestanas svg { stroke: var(--textoTenue); }
+  .c-pestanas .activa { color: var(--acento); }
+  .c-pestanas .activa svg { stroke: var(--acento); }
+
+  /* ===== 6. Pantalla de ejemplo ===== */
+  .telefonos { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; }
+  .telefono { width: 390px; height: 844px; border-radius: 44px; border: 10px solid #1F1F1F; background: var(--fondo); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,0,0,.55); flex-shrink: 0; }
+  .telefono.chico { transform: scale(0.72); transform-origin: top left; margin-right: -110px; margin-bottom: -236px; }
+  .estado-barra { display: flex; justify-content: space-between; padding: 14px 26px 6px; font-size: 13px; font-weight: 600; }
+  .scroll { flex: 1; overflow-y: auto; padding: 8px 20px 20px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
+  .scroll::-webkit-scrollbar { display: none; }
+  .scroll > * { flex-shrink: 0; }
+  .cabecera-pantalla .t-etiqueta { display: block; }
+  .cabecera-pantalla h2 { margin: 4px 0 0; font-size: 32px; font-weight: 800; letter-spacing: -0.8px; }
+  .dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+  .telefono .c-dato { padding: 14px 16px; }
+  .telefono .c-dato .valor { font-size: 40px; }
+  .telefono .c-dato .valor.texto { font-size: 22px; }
+  .telefono .c-destacada .c-poster { height: 140px; }
+
+  /* ===== 7. Voz ===== */
+  .ejemplo { background: var(--superficie); border: 1px solid var(--borde); border-left: 3px solid var(--acento); border-radius: var(--r-s); padding: 12px 14px; margin-bottom: 10px; }
+  .ejemplo small { display: block; color: var(--textoTenue); font-size: 11px; text-transform: uppercase; letter-spacing: .6px; font-weight: 700; margin-bottom: 4px; }
+  .si { color: var(--acento); font-weight: 700; }
+  .no { color: var(--peligro); font-weight: 700; }
+  footer { margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--borde); color: var(--textoTenue); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="pagina">
+
+  <header class="portada">
+    <div>
+      <span class="num">Brand board · v2 · 21/11/2026</span>
+      <h1>Cinta · Mi año en cine</h1>
+      <p>Decisiones visuales de la app, antes de escribirlas para el agente en <code>DESIGN.md</code> y en código en <code>src/tema/</code>. Sale de <code>docs/diseno/BRIEF.md</code>: <strong>íntima, editorial, enérgica</strong>; al ver su año, el usuario siente <strong>orgullo</strong>.</p>
+    </div>
+    <button class="interruptor" id="contraste" aria-pressed="false">Ver en alto contraste</button>
+  </header>
+
+  <nav class="indice" aria-label="Secciones">
+    <a href="#marca">1 · Marca</a><a href="#color">2 · Color</a><a href="#tipografia">3 · Tipografía</a><a href="#espacio">4 · Espacio y forma</a><a href="#componentes">5 · Componentes</a><a href="#pantalla">6 · Pantalla de ejemplo</a><a href="#voz">7 · Voz</a>
+  </nav>
+
+  <!-- 1. MARCA -->
+  <section class="bloque" id="marca">
+    <span class="num">01</span>
+    <h2>Marca</h2>
+    <p class="intro">Se conserva el nombre y el logotipo del Proyecto 3. La marca de la app siempre es más grande y más visible que la de TMDB.</p>
+    <div class="rejilla r2">
+      <div class="lamina">
+        <div class="marca-fila">
+          <svg width="88" height="88" viewBox="0 0 256 256" role="img" aria-label="Logotipo de Cinta"><rect width="256" height="256" rx="58" fill="#D4FF3A"/><path d="M169 87A58 58 0 1 0 169 169" fill="none" stroke="#0A0A0A" stroke-width="34" stroke-linecap="round"/><circle cx="128" cy="128" r="13" fill="#0A0A0A"/></svg>
+          <div class="wordmark">Cinta<span>.</span></div>
+        </div>
+        <p class="nota" style="margin-top:16px">Logotipo: cuadrado <code>acento</code> con radio 58/256, "C" de trazo grueso abierta a la derecha (la cinta que se enrolla) y punto central (el proyector). Wordmark en fuente del sistema, peso 800, con el punto final en acento.</p>
+        <div class="atribucion">
+          <span class="tmdb-marca" aria-label="Logo de TMDB">TMDB</span>
+          <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
+        </div>
+        <p class="nota">↑ Atribución obligatoria: logo de TMDB a 10–12 px de alto y texto <code>textoTenue</code> 11 px. Nunca en acento ni junto al logotipo de Cinta.</p>
+      </div>
+      <div class="lamina">
+        <h3 style="margin-top:0">Tamaños mínimos y usos</h3>
+        <table>
+          <tr><th>Uso</th><th>Tamaño</th><th>Versión</th></tr>
+          <tr><td>Ícono de la app</td><td>1024 px</td><td>Logotipo completo</td></tr>
+          <tr><td>Login / splash</td><td>88 px + wordmark 56</td><td>Logotipo + wordmark</td></tr>
+          <tr><td>Cabecera de Perfil</td><td>32 px</td><td>Solo logotipo</td></tr>
+          <tr><td>Créditos / Perfil</td><td>TMDB 12 px</td><td>Atribución en <code>textoTenue</code></td></tr>
+        </table>
+        <p class="nota">Área de respeto alrededor del logotipo: un cuarto de su ancho.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. COLOR -->
+  <section class="bloque" id="color">
+    <span class="num">02</span>
+    <h2>Color</h2>
+    <p class="intro">Negro de sala de cine y un solo acento verde lima para lo importante. Los valores son los del Proyecto 3; los marcados <span class="nuevo">nuevo</span> los agrega esta épica. El botón de arriba muestra el tema de alto contraste.</p>
+
+    <h3>Paleta</h3>
+    <div class="lamina">
+      <table>
+        <tr><th></th><th>Token</th><th>Normal</th><th>Alto contraste</th><th>Uso</th></tr>
+        <tr><td><div class="chip-color" style="background:var(--fondo)"></div></td><td><code>fondo</code></td><td>#0A0A0A</td><td>#000000</td><td>Fondo de pantalla</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--superficie)"></div></td><td><code>superficie</code></td><td>#131313</td><td>#0D0D0D</td><td>Tarjetas</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--superficieAlta)"></div></td><td><code>superficieAlta</code></td><td>#1B1B1B</td><td>#1F1F1F</td><td>Campos, segmentos, póster vacío</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--borde)"></div></td><td><code>borde</code></td><td>#262626</td><td>#6B6B66</td><td>Bordes y separadores</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--texto)"></div></td><td><code>texto</code></td><td>#F4F4F1</td><td>#F4F4F1</td><td>Títulos y datos</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--textoSecundario)"></div></td><td><code>textoSecundario</code></td><td>#A3A3A0</td><td>#E6E6E2</td><td>Texto de apoyo</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--textoTenue)"></div></td><td><code>textoTenue</code></td><td>#8A8A86</td><td>#CFCFCA</td><td>Metadatos, placeholder, atribución</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--estrellaVacia)"></div></td><td><code>estrellaVacia</code></td><td>#4A4A47</td><td>#8A8A86</td><td>Estrellas sin llenar (no es texto)</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--acento)"></div></td><td><code>acento</code></td><td>#D4FF3A</td><td>#D4FF3A</td><td>Acción principal, dato destacado, pestaña activa</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--sobreAcento)"></div></td><td><code>sobreAcento</code></td><td>#0A0A0A</td><td>#0A0A0A</td><td>Texto sobre acento</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--acentoSuave)"></div></td><td><code>acentoSuave</code></td><td>lima 12 %</td><td>lima 22 %</td><td>Fondos suaves, avisos, "viendo"</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--peligro)"></div></td><td><code>peligro</code></td><td>#FF7A6B</td><td>#FF9C90</td><td>Error, quitar de la lista</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--peligroSuave)"></div></td><td><code>peligroSuave</code> <span class="nuevo">nuevo</span></td><td>coral 12 %</td><td>coral 16 %</td><td>Fondo de avisos y estados de error</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--barraInactiva)"></div></td><td><code>barraInactiva</code> <span class="nuevo">nuevo</span></td><td>#3A3D2E</td><td>#5A5E47</td><td>Barras de meses que no son el más activo (no es texto)</td></tr>
+        <tr><td><div class="chip-color" style="background:var(--velo)"></div></td><td><code>velo</code></td><td>negro 62 %</td><td>negro 85 %</td><td>Controles sobre imágenes</td></tr>
+      </table>
+    </div>
+
+    <h3>Colores de estado y de error <span class="nuevo">nuevo como tokens</span></h3>
+    <p class="nota">Hasta ahora se armaban dentro del componente; pasan a ser tokens propios para que todas las pantallas los usen igual.</p>
+    <div class="rejilla r3" style="margin-top:12px">
+      <div class="par" style="background:var(--superficie)">
+        <span class="c-etiqueta vista">Vista</span>
+        <strong style="margin-top:10px"><code>estadoVista</code></strong>
+        <span class="nota">Fondo <code>acento</code> · texto <code>sobreAcento</code></span>
+        <div class="ratio ok" style="color:var(--acento)">17,1 : 1 (alto contraste 17,1)</div>
+      </div>
+      <div class="par" style="background:var(--superficie)">
+        <span class="c-etiqueta viendo">Viendo</span>
+        <strong style="margin-top:10px"><code>estadoViendo</code></strong>
+        <span class="nota">Fondo <code>acentoSuave</code> · texto <code>acento</code></span>
+        <div class="ratio ok" style="color:var(--acento)">12,0 : 1 (alto contraste 9,2)</div>
+      </div>
+      <div class="par" style="background:var(--superficie)">
+        <span class="c-etiqueta porver">Por ver</span>
+        <strong style="margin-top:10px"><code>estadoPorVer</code></strong>
+        <span class="nota">Fondo <code>superficieAlta</code> · texto <code>textoSecundario</code></span>
+        <div class="ratio ok" style="color:var(--acento)">6,8 : 1 (alto contraste 13,2)</div>
+      </div>
+      <div class="par" style="background:var(--peligroSuave)">
+        <span style="color:var(--peligro);font-weight:700;font-size:14px">No pudimos cargar tu resumen</span>
+        <strong style="margin-top:10px"><code>error</code></strong>
+        <span class="nota">Texto <code>peligro</code> sobre <code>peligroSuave</code></span>
+        <div class="ratio ok" style="color:var(--acento)">6,2 : 1 · texto blanco encima 14,3</div>
+      </div>
+    </div>
+
+    <h3>Contraste de cada texto sobre su fondo (mínimo 4,5 : 1)</h3>
+    <div class="lamina">
+      <table>
+        <tr><th>Texto</th><th>Sobre fondo</th><th>Sobre superficie</th><th>Sobre superficieAlta</th><th>Alto contraste (superficie)</th></tr>
+        <tr><td><code>texto</code></td><td class="ok">18,0</td><td class="ok">16,9</td><td class="ok">15,6</td><td class="ok">17,6</td></tr>
+        <tr><td><code>textoSecundario</code></td><td class="ok">7,8</td><td class="ok">7,3</td><td class="ok">6,8</td><td class="ok">15,5</td></tr>
+        <tr><td><code>textoTenue</code></td><td class="ok">5,7</td><td class="ok">5,4</td><td class="ok">5,0</td><td class="ok">12,4</td></tr>
+        <tr><td><code>acento</code></td><td class="ok">17,1</td><td class="ok">16,1</td><td class="ok">14,9</td><td class="ok">16,8</td></tr>
+        <tr><td><code>peligro</code></td><td class="ok">7,8</td><td class="ok">7,3</td><td class="ok">6,8</td><td class="ok">9,6</td></tr>
+        <tr><td><code>sobreAcento</code> sobre <code>acento</code></td><td colspan="3" class="ok">17,1</td><td class="ok">17,1</td></tr>
+      </table>
+      <p class="nota">Calculado con la fórmula de luminancia relativa de WCAG 2.1. Regla: <code>textoTenue</code> nunca se usa sobre fondos más claros que <code>superficieAlta</code>.</p>
+    </div>
+  </section>
+
+  <!-- 3. TIPOGRAFÍA -->
+  <section class="bloque" id="tipografia">
+    <span class="num">03</span>
+    <h2>Tipografía</h2>
+    <p class="intro">Fuente del sistema (San Francisco en iOS, Roboto en Android). Lo editorial sale de los pesos y tamaños, no de una fuente especial. Todos los tamaños se multiplican por 1, 1,15 o 1,3 según la preferencia de accesibilidad.</p>
+    <div class="lamina">
+      <table>
+        <tr><th>Muestra</th><th>Token</th><th>Tamaño / peso</th><th>Uso</th></tr>
+        <tr><td><span class="t-dato">42</span></td><td><code>dato</code> <span class="nuevo">nuevo</span></td><td>48 / 800 · cifras tabulares · espaciado −1,5</td><td>Número grande de una tarjeta de dato</td></tr>
+        <tr><td><span class="t-display">Mi año en cine</span></td><td><code>display</code></td><td>32 / 800 · −0,8</td><td>Título de pantalla</td></tr>
+        <tr><td><span class="t-titulo">La última función</span></td><td><code>titulo</code></td><td>22 / 700 · −0,3</td><td>Título de obra destacada, secciones</td></tr>
+        <tr><td><span class="t-subtitulo">Barras por mes</span></td><td><code>subtitulo</code></td><td>16 / 600</td><td>Títulos de tarjeta, botones de lista</td></tr>
+        <tr><td><span class="t-cuerpo">Octubre fue tu mes: 7 obras.</span></td><td><code>cuerpo</code></td><td>15 / 400 · línea 22</td><td>Párrafos y mensajes</td></tr>
+        <tr><td><span class="t-pequeno">30 películas y 12 series</span></td><td><code>pequeno</code></td><td>13 / 400 · línea 18</td><td>Apoyo de un dato, metadatos</td></tr>
+        <tr><td><span class="t-etiqueta">Horas de cine</span></td><td><code>etiqueta</code></td><td>11 / 700 · mayúsculas · +1,1</td><td>Rótulo de tarjeta, en acento</td></tr>
+      </table>
+      <p class="nota">Los decimales se escriben con coma: <strong>48,5 h</strong>.</p>
+    </div>
+  </section>
+
+  <!-- 4. ESPACIO Y FORMA -->
+  <section class="bloque" id="espacio">
+    <span class="num">04</span>
+    <h2>Espacio y forma</h2>
+    <p class="intro">Una escala de espacios de 4 en 4, tres radios y un alto táctil mínimo de 44 px en todo lo que se toca.</p>
+    <div class="rejilla r3">
+      <div class="lamina">
+        <h3 style="margin-top:0">Espacios <span class="nuevo">nuevo como escala</span></h3>
+        <div class="regla">
+          <div><i style="width:4px;height:4px"></i>xs 4</div>
+          <div><i style="width:8px;height:8px"></i>s 8</div>
+          <div><i style="width:12px;height:12px"></i>m 12</div>
+          <div><i style="width:16px;height:16px"></i>l 16</div>
+          <div><i style="width:20px;height:20px"></i>margen 20</div>
+          <div><i style="width:24px;height:24px"></i>xl 24</div>
+          <div><i style="width:32px;height:32px"></i>xxl 32</div>
+        </div>
+        <p class="nota">Entre tarjetas: 12. Margen lateral de pantalla: 20. Dentro de una tarjeta de dato: 18.</p>
+      </div>
+      <div class="lamina">
+        <h3 style="margin-top:0">Radios</h3>
+        <div class="radios">
+          <div style="border-radius:var(--r-s)">s 10</div>
+          <div style="border-radius:var(--r-m)">m 14</div>
+          <div style="border-radius:var(--r-l)">l 20</div>
+        </div>
+        <p class="nota">s: póster y avisos pequeños · m: botones, campos, tarjeta de obra · l: tarjetas del resumen.</p>
+      </div>
+      <div class="lamina">
+        <h3 style="margin-top:0">Área táctil</h3>
+        <div style="display:flex;gap:16px;align-items:center">
+          <div class="toque-demo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></div>
+          <span class="nota"><code>toque</code> = 44 × 44 mínimo, aunque el ícono mida 20. Botones grandes: 52 de alto. Separación entre tocables: 8.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. COMPONENTES -->
+  <section class="bloque" id="componentes">
+    <span class="num">05</span>
+    <h2>Componentes</h2>
+    <p class="intro">Los del Proyecto 3 que se conservan y los nuevos de la épica. La pantalla de ejemplo (sección 6) se arma solo con estos.</p>
+
+    <h3>Se conservan del Proyecto 3</h3>
+    <div class="rejilla r2">
+      <div class="lamina">
+        <span class="t-etiqueta">Tarjeta de obra</span>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+          <div class="c-tarjeta-obra">
+            <div class="c-poster">Neón</div>
+            <div><h4>Neón en Bogotá</h4><p>Película · 2024</p><span class="c-etiqueta vista">Vista</span></div>
+          </div>
+          <div class="c-tarjeta-obra">
+            <div class="c-poster vacio">Sin póster</div>
+            <div><h4>El faro del sur</h4><p>Serie · 2023</p><span class="c-etiqueta porver">Por ver</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="lamina">
+        <span class="t-etiqueta">Selector de estado</span>
+        <div class="c-segmentos" style="margin:12px 0 20px" role="radiogroup"><button>Por ver</button><button>Viendo</button><button class="activo">Vista</button></div>
+        <span class="t-etiqueta">Estrellas</span>
+        <div class="c-estrellas" style="margin:12px 0 20px" aria-label="4 de 5 estrellas">
+          <svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="vacia" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg>
+        </div>
+        <span class="t-etiqueta">Botones</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px">
+          <button class="c-boton primario">Agregar a mi lista</button>
+          <button class="c-boton secundario">Cancelar</button>
+          <button class="c-boton peligro">Quitar</button>
+        </div>
+        <span class="t-etiqueta">Chips de filtro</span>
+        <div class="c-chips" style="margin:12px 0 20px"><button class="c-chip activo">Todas</button><button class="c-chip">Películas</button><button class="c-chip">Series</button></div>
+        <span class="t-etiqueta">Aviso sin conexión</span>
+        <div class="c-aviso" style="margin-top:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 5.2-2.8M19 12.9a10 10 0 0 0-2.5-1.6M12 20h.01"/></svg>Estás sin conexión. No pasa nada: te mostramos lo último que guardamos.</div>
+      </div>
+    </div>
+
+    <h3>Nuevos de la épica "Mi año en cine"</h3>
+    <div class="rejilla r3">
+      <div>
+        <span class="t-etiqueta">Tarjeta de dato <span class="nuevo">nuevo</span></span>
+        <div class="c-dato" style="margin-top:12px">
+          <span class="t-etiqueta">Obras vistas</span>
+          <div class="valor">42</div>
+          <div class="apoyo">30 películas y 12 series</div>
+        </div>
+        <div class="c-dato" style="margin-top:12px">
+          <span class="t-etiqueta">Horas de cine</span>
+          <div class="valor">48,5<small>h</small></div>
+          <div class="apoyo">Solo cuentan películas</div>
+          <div class="falta">ⓘ 2 películas sin duración no suman horas</div>
+        </div>
+        <p class="nota">Variantes: número (dato 48), texto (26/800 para género o director), con aviso de dato faltante en <code>textoTenue</code>.</p>
+      </div>
+      <div>
+        <span class="t-etiqueta">Barras por mes <span class="nuevo">nuevo</span></span>
+        <div class="c-barras" style="margin-top:12px">
+          <div class="cabeza"><strong>Tu año mes a mes</strong><span class="t-pequeno">Pico: octubre</span></div>
+          <div class="area" role="img" aria-label="Obras vistas por mes: enero 2, febrero 3, marzo 4, abril 3, mayo 2, junio 4, julio 3, agosto 5, septiembre 4, octubre 7, noviembre 3, diciembre 0">
+            <div class="col"><div class="barra" style="height:28%"></div><span class="mes">E</span></div>
+            <div class="col"><div class="barra" style="height:43%"></div><span class="mes">F</span></div>
+            <div class="col"><div class="barra" style="height:57%"></div><span class="mes">M</span></div>
+            <div class="col"><div class="barra" style="height:43%"></div><span class="mes">A</span></div>
+            <div class="col"><div class="barra" style="height:28%"></div><span class="mes">M</span></div>
+            <div class="col"><div class="barra" style="height:57%"></div><span class="mes">J</span></div>
+            <div class="col"><div class="barra" style="height:43%"></div><span class="mes">J</span></div>
+            <div class="col"><div class="barra" style="height:71%"></div><span class="mes">A</span></div>
+            <div class="col"><div class="barra" style="height:57%"></div><span class="mes">S</span></div>
+            <div class="col top"><span class="cifra">7</span><div class="barra" style="height:82%"></div><span class="mes">O</span></div>
+            <div class="col"><div class="barra" style="height:43%"></div><span class="mes">N</span></div>
+            <div class="col"><div class="barra" style="height:0"></div><span class="mes">D</span></div>
+          </div>
+        </div>
+        <p class="nota">12 barras siempre, también con 0 (línea mínima de 3 px). Alto proporcional al mes máximo. Se construyen con <code>View</code>, sin librerías de gráficas. Para lectores de pantalla, la tarjeta entera lleva una etiqueta con los 12 valores.</p>
+      </div>
+      <div>
+        <span class="t-etiqueta">Obra destacada <span class="nuevo">nuevo</span></span>
+        <div class="c-destacada" style="margin-top:12px">
+          <div class="c-poster p2">La última función</div>
+          <div class="cuerpo">
+            <span class="t-etiqueta">Tu mejor calificada del año</span>
+            <div class="c-estrellas" style="margin-top:8px" aria-label="5 de 5 estrellas">
+              <svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg>
+            </div>
+            <p>Película · vista el 12 de octubre</p>
+          </div>
+        </div>
+        <p class="nota">Sin obras calificadas: la tarjeta cambia por un estado que invita a calificar (ver estados).</p>
+      </div>
+    </div>
+
+    <div class="rejilla r2" style="margin-top:16px">
+      <div class="lamina">
+        <span class="t-etiqueta">Selector de año <span class="nuevo">nuevo</span></span>
+        <div class="c-anios" style="margin-top:12px" role="tablist"><button class="c-chip activo" role="tab" aria-selected="true">2026</button><button class="c-chip" role="tab">2025</button><button class="c-chip" role="tab">2024</button></div>
+        <p class="nota">Reutiliza el chip. Solo años con obras vistas más el actual, del más reciente al más antiguo; se abre en el actual (D4). Desplazable si no caben.</p>
+      </div>
+      <div class="lamina">
+        <span class="t-etiqueta">Pestaña nueva en la barra <span class="nuevo">nuevo</span></span>
+        <div class="c-pestanas" style="margin-top:12px;border-radius:var(--r-m);padding-bottom:10px">
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Buscar</div>
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Mi lista</div>
+          <div class="activa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Mi año</div>
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</div>
+        </div>
+        <p class="nota">Va entre "Mi lista" y "Perfil". Ícono de barras (Lucide <code>chart-column</code>).</p>
+      </div>
+    </div>
+
+    <h3>Estados de pantalla <span class="nuevo">nuevo</span></h3>
+    <div class="rejilla r3">
+      <div class="c-estado"><div class="c-giro" role="progressbar" aria-label="Cargando"></div><strong>Armando tu año…</strong><p>Un momento y lo tienes.</p></div>
+      <div class="c-estado"><strong>Completando datos de TMDB</strong><div class="c-progreso" role="progressbar" aria-valuenow="2" aria-valuemax="5"><i></i></div><p>Completando 2 de 5 obras. Ya casi.</p></div>
+      <div class="c-estado"><div class="icono"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div><strong>Todavía no hay nada en 2025</strong><p>¿Empezamos? Marca lo que veas y aquí aparecerá tu año.</p><button class="c-boton primario pequeno">Ir a Mi lista</button></div>
+      <div class="c-estado err"><div class="icono"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg></div><strong>Uy, no pudimos cargar tu resumen</strong><p>Revisa tu conexión y lo intentamos otra vez.</p><button class="c-boton secundario pequeno">Reintentar</button></div>
+      <div class="c-estado" style="text-align:left;align-items:stretch"><div class="c-aviso"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M12 20h.01"/></svg>Estás sin conexión. No pasa nada: te mostramos lo último que guardamos.</div><p style="max-width:none">Aviso arriba del resumen; el resto se ve normal (D13).</p></div>
+      <div class="c-estado" style="text-align:left;align-items:stretch"><div class="c-aviso"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/></svg>2 obras se quedaron sin datos de TMDB, así que no cuentan en horas, género ni director.</div><p style="max-width:none">Datos faltantes (D6, D7): aviso informativo, no error.</p></div>
+    </div>
+    <div class="rejilla r2" style="margin-top:16px">
+      <div class="c-dato"><span class="t-etiqueta">Director más visto</span><div class="valor texto" style="color:var(--textoSecundario)">Aún sin director favorito</div><div class="apoyo">No hay datos suficientes: a las películas de este año les falta el director en TMDB.</div></div>
+      <div class="c-dato"><span class="t-etiqueta">Tu mejor calificada</span><div class="valor texto" style="color:var(--textoSecundario)">Aún sin favorita</div><div class="apoyo">Califica lo que viste y te contamos cuál fue tu favorita.</div></div>
+    </div>
+  </section>
+
+  <!-- 6. PANTALLA DE EJEMPLO -->
+  <section class="bloque" id="pantalla">
+    <span class="num">06</span>
+    <h2>Pantalla de ejemplo</h2>
+    <p class="intro">"Mi año en cine" a 390 × 844, armada solo con los componentes de la sección 5. A la derecha, la misma pantalla con un año vacío.</p>
+    <div class="telefonos">
+      <div class="telefono" aria-label="Maqueta de Mi año en cine con datos">
+        <div class="estado-barra"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="scroll">
+          <div class="cabecera-pantalla"><span class="t-etiqueta">Tu resumen</span><h2>Mi año en cine</h2><p class="t-cuerpo" style="margin:6px 0 0">¡Viste 42 obras este año! Nada mal.</p></div>
+          <div class="c-anios"><button class="c-chip activo">2026</button><button class="c-chip">2025</button><button class="c-chip">2024</button></div>
+          <div class="c-dato">
+            <span class="t-etiqueta">Obras vistas</span>
+            <div class="valor">42</div>
+            <div class="apoyo">30 películas y 12 series</div>
+          </div>
+          <div class="dos">
+            <div class="c-dato"><span class="t-etiqueta">Horas de cine</span><div class="valor">48,5<small>h</small></div><div class="falta">ⓘ 2 sin duración</div></div>
+            <div class="c-dato"><span class="t-etiqueta">Mes top</span><div class="valor texto">Octubre</div><div class="apoyo">7 obras</div></div>
+          </div>
+          <div class="dos">
+            <div class="c-dato"><span class="t-etiqueta">Género</span><div class="valor texto">Drama</div><div class="apoyo">14 obras</div></div>
+            <div class="c-dato"><span class="t-etiqueta">Director</span><div class="valor texto">Lucía Ferrer</div><div class="apoyo">3 películas</div></div>
+          </div>
+          <div class="c-barras">
+            <div class="cabeza"><strong>Tu año mes a mes</strong><span class="t-pequeno">Pico: octubre</span></div>
+            <div class="area" style="height:96px">
+              <div class="col"><div class="barra" style="height:28%"></div><span class="mes">E</span></div>
+              <div class="col"><div class="barra" style="height:43%"></div><span class="mes">F</span></div>
+              <div class="col"><div class="barra" style="height:57%"></div><span class="mes">M</span></div>
+              <div class="col"><div class="barra" style="height:43%"></div><span class="mes">A</span></div>
+              <div class="col"><div class="barra" style="height:28%"></div><span class="mes">M</span></div>
+              <div class="col"><div class="barra" style="height:57%"></div><span class="mes">J</span></div>
+              <div class="col"><div class="barra" style="height:43%"></div><span class="mes">J</span></div>
+              <div class="col"><div class="barra" style="height:71%"></div><span class="mes">A</span></div>
+              <div class="col"><div class="barra" style="height:57%"></div><span class="mes">S</span></div>
+              <div class="col top"><span class="cifra">7</span><div class="barra" style="height:78%"></div><span class="mes">O</span></div>
+              <div class="col"><div class="barra" style="height:43%"></div><span class="mes">N</span></div>
+              <div class="col"><div class="barra" style="height:0"></div><span class="mes">D</span></div>
+            </div>
+          </div>
+          <div class="c-destacada">
+            <div class="c-poster p2">La última función</div>
+            <div class="cuerpo">
+              <span class="t-etiqueta">Tu mejor calificada del año</span>
+              <div class="c-estrellas" style="margin-top:8px"><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg><svg viewBox="0 0 24 24"><path class="llena" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18l-6.5 4 1.7-7.4-5.7-5 7.5-.7z"/></svg></div>
+              <p>Película · vista el 12 de octubre</p>
+            </div>
+          </div>
+        </div>
+        <div class="c-pestanas">
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Buscar</div>
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Mi lista</div>
+          <div class="activa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Mi año</div>
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</div>
+        </div>
+      </div>
+
+      <div class="telefono chico" aria-label="Maqueta de Mi año en cine vacío">
+        <div class="estado-barra"><span>9:41</span><span>●●● 100%</span></div>
+        <div class="scroll">
+          <div class="cabecera-pantalla"><span class="t-etiqueta">Tu resumen</span><h2>Mi año en cine</h2></div>
+          <div class="c-anios"><button class="c-chip">2026</button><button class="c-chip activo">2025</button><button class="c-chip">2024</button></div>
+          <div class="c-estado" style="margin-top:40px;padding:40px 20px"><div class="icono"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div><strong>Todavía no hay nada en 2025</strong><p>¿Empezamos? Marca lo que veas y aquí aparecerá tu año.</p><button class="c-boton primario pequeno">Ir a Mi lista</button></div>
+        </div>
+        <div class="c-pestanas">
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Buscar</div>
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Mi lista</div>
+          <div class="activa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Mi año</div>
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</div>
+        </div>
+      </div>
+    </div>
+    <p class="nota" style="margin-top:20px">Componentes usados: selector de año (chip), tarjeta de dato (número y texto), aviso de dato faltante, barras por mes, obra destacada, estrellas, estado vacío, botón primario, barra de pestañas. Los títulos y nombres son inventados.</p>
+  </section>
+
+  <!-- 7. VOZ -->
+  <section class="bloque" id="voz">
+    <span class="num">07</span>
+    <h2>Voz</h2>
+    <p class="intro">Cinta te habla de tú, como una amiga que también ve cine: cálida, breve y contenta con tus logros. Celebra lo que viste sin exagerar y nunca te hace sentir culpa por no haber visto "suficiente". Cuando algo falla, mantiene la calma y te dice qué hacer.</p>
+    <div class="rejilla r2">
+      <div>
+        <div class="ejemplo"><small>Resumen</small>¡Viste 42 obras este año! Nada mal.</div>
+        <div class="ejemplo"><small>Resumen</small>Octubre fue tu mes: 7 obras.</div>
+        <div class="ejemplo"><small>Vacío</small>Todavía no hay nada en 2025. ¿Empezamos? Marca lo que veas y aquí aparecerá tu año.</div>
+        <div class="ejemplo"><small>Error</small>Uy, no pudimos cargar tu resumen. Revisa tu conexión y lo intentamos otra vez.</div>
+        <div class="ejemplo"><small>Sin conexión</small>Estás sin conexión. No pasa nada: te mostramos lo último que guardamos.</div>
+        <div class="ejemplo"><small>Datos faltantes</small>2 obras se quedaron sin datos de TMDB, así que no cuentan en horas, género ni director.</div>
+        <div class="ejemplo"><small>Destacada sin calificar</small>Califica lo que viste y te contamos cuál fue tu favorita del año.</div>
+        <div class="ejemplo"><small>Director sin datos</small>Aún no sabemos quién es tu director favorito. No hay datos suficientes: a las películas de este año les falta el director en TMDB.</div>
+      </div>
+      <div class="lamina">
+        <h3 style="margin-top:0">Sí y no</h3>
+        <table>
+          <tr><th>Sí</th><th>No</th></tr>
+          <tr><td><span class="si">¡Viste</span> 42 obras este año!</td><td><span class="no">El usuario ha visualizado</span> 42 obras</td></tr>
+          <tr><td>Octubre fue tu mes</td><td>Mes con mayor actividad registrada: 10</td></tr>
+          <tr><td>48,5 h</td><td>48.5 horas / 48 h 30 min</td></tr>
+          <tr><td>Todavía no hay nada en 2025. ¿Empezamos?</td><td>¡No has visto nada! 😢</td></tr>
+          <tr><td>Uy, no pudimos cargar tu resumen</td><td>Error 500: fetch failed</td></tr>
+          <tr><td>Nada mal · Qué buen año</td><td>¡Eres el mejor cinéfilo del mundo!</td></tr>
+          <tr><td>Ir a Mi lista</td><td>Haz clic aquí</td></tr>
+          <tr><td>Exclamaciones para celebrar algo real</td><td>Exclamaciones en errores o avisos</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Cinta · brand board v2 · Fuente: <code>docs/diseno/BRIEF.md</code>. Siguiente: <code>DESIGN.md</code> (para el agente) y <code>src/tema/</code> (en código). Pósters y nombres de obras y personas inventados.
+  </footer>
+</div>
+<script>
+  const boton = document.getElementById('contraste');
+  boton.addEventListener('click', () => {
+    const activo = document.body.classList.toggle('contraste');
+    boton.setAttribute('aria-pressed', String(activo));
+    boton.textContent = activo ? 'Ver en tema normal' : 'Ver en alto contraste';
+  });
+</script>
+</body>
+</html>
