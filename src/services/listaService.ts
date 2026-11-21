@@ -12,7 +12,7 @@ import {
 } from 'firebase/firestore';
 import type { CambiosItem, DatosTmdb, EstadoVisionado, ItemLista, Obra, TipoObra } from '../types';
 import { guardarCache, leerCache } from './cache';
-import { conTiempoMaximo, db } from './firebase';
+import { conTiempoMaximo, db, SinConexionError } from './firebase';
 
 const coleccion = (uid: string) => collection(db, 'usuarios', uid, 'mi_lista');
 
@@ -68,6 +68,8 @@ export function normalizarItem(crudo: Record<string, unknown>): ItemLista {
 
 export async function obtener(uid: string): Promise<ItemLista[]> {
   const snap = await conTiempoMaximo(getDocs(query(coleccion(uid), orderBy('agregadoEn', 'desc'))));
+  // P17 (H1): sin red, getDocs responde con la caché de Firestore (vacía al abrir en frío). No es la lista real.
+  if (snap.metadata.fromCache) throw new SinConexionError('La lista viene de la caché');
   return snap.docs.map((d) => normalizarItem({ ...d.data({ serverTimestamps: 'estimate' }), id: d.id }));
 }
 

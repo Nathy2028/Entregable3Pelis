@@ -1,6 +1,15 @@
 import Lucide from '@react-native-vector-icons/lucide';
 import { memo, useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EtiquetaEstado, NOMBRE_ESTADO, Poster } from '../components/obra';
 import { AvisoSinConexion, Chip, Etiqueta, EstadoVacio } from '../components/ui';
@@ -22,7 +31,7 @@ export function MiListaScreen({ navigation }: PropsPestana<'MiLista'>) {
   const { width } = useWindowDimensions();
   const { color, texto } = useTema();
   const s = useEstilos(estilos);
-  const { lista, sinConexion, cargandoLista, recargar } = useCartelera();
+  const { lista, sinConexion, errorLista, cargandoLista, recargar } = useCartelera();
   const [estado, setEstado] = useState<'todas' | EstadoVisionado>('todas');
   const [tipo, setTipo] = useState<TipoObra | null>(null); // null = películas y series
 
@@ -50,9 +59,19 @@ export function MiListaScreen({ navigation }: PropsPestana<'MiLista'>) {
         <Etiqueta texto={`${lista.length} ${lista.length === 1 ? 'título' : 'títulos'}`} tono="neutro" />
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.filtros} contentContainerStyle={s.filtrosFila}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={s.filtros}
+        contentContainerStyle={s.filtrosFila}
+      >
         {ESTADOS.map((e) => (
-          <Chip key={e} texto={e === 'todas' ? 'Todas' : NOMBRE_ESTADO[e]} activo={estado === e} onPress={() => setEstado(e)} />
+          <Chip
+            key={e}
+            texto={e === 'todas' ? 'Todas' : NOMBRE_ESTADO[e]}
+            activo={estado === e}
+            onPress={() => setEstado(e)}
+          />
         ))}
         <View style={s.separador} />
         {TIPOS.map((t) => (
@@ -67,37 +86,52 @@ export function MiListaScreen({ navigation }: PropsPestana<'MiLista'>) {
 
       {sinConexion && <AvisoSinConexion onReintentar={recargar} cargando={cargandoLista} />}
 
-      <FlatList
-        data={visibles}
-        keyExtractor={(i) => i.id}
-        renderItem={renderItem}
-        numColumns={3}
-        columnWrapperStyle={s.columnas}
-        contentContainerStyle={[s.lista, visibles.length === 0 && s.listaVacia]}
-        refreshControl={
-          <RefreshControl
-            refreshing={cargandoLista}
-            onRefresh={recargar}
-            tintColor={color.acento}
-            colors={[color.sobreAcento]}
-            progressBackgroundColor={color.acento}
-          />
-        }
-        ListEmptyComponent={
-          cargandoLista ? undefined : lista.length === 0 ? (
-            <EstadoVacio
-              icono="bookmark"
-              titulo="Tu lista está vacía"
-              mensaje="Busca una película o serie y toca «Agregar a mi lista»."
-              accion={{ titulo: 'Buscar títulos', onPress: () => navigation.navigate('Buscar') }}
+      {/* H12: un error que no es de red tiene su propio mensaje; la copia sigue guardada. */}
+      {errorLista ? (
+        <EstadoVacio
+          icono="circle-alert"
+          titulo="No pudimos cargar tu lista"
+          mensaje={errorLista}
+          accion={{ titulo: 'Reintentar', onPress: () => void recargar() }}
+        />
+      ) : (
+        <FlatList
+          data={visibles}
+          keyExtractor={(i) => i.id}
+          renderItem={renderItem}
+          numColumns={3}
+          columnWrapperStyle={s.columnas}
+          contentContainerStyle={[s.lista, visibles.length === 0 && s.listaVacia]}
+          refreshControl={
+            <RefreshControl
+              refreshing={cargandoLista}
+              onRefresh={recargar}
+              tintColor={color.acento}
+              colors={[color.sobreAcento]}
+              progressBackgroundColor={color.acento}
             />
-          ) : (
-            <EstadoVacio icono="list-filter" titulo="Nada con estos filtros" mensaje="Prueba con otro estado o tipo." />
-          )
-        }
-        initialNumToRender={12}
-        windowSize={7}
-      />
+          }
+          ListEmptyComponent={
+            // Sin red no sabemos si la lista está vacía: basta el aviso de arriba (H1).
+            cargandoLista || (sinConexion && lista.length === 0) ? undefined : lista.length === 0 ? (
+              <EstadoVacio
+                icono="bookmark"
+                titulo="Tu lista está vacía"
+                mensaje="Busca una película o serie y toca «Agregar a mi lista»."
+                accion={{ titulo: 'Buscar títulos', onPress: () => navigation.navigate('Buscar') }}
+              />
+            ) : (
+              <EstadoVacio
+                icono="list-filter"
+                titulo="Nada con estos filtros"
+                mensaje="Prueba con otro estado o tipo."
+              />
+            )
+          }
+          initialNumToRender={12}
+          windowSize={7}
+        />
+      )}
     </View>
   );
 }
@@ -158,7 +192,13 @@ const estilos = ({ color }: Tema) =>
     columnas: { gap: ESPACIO },
 
     titulo: { color: color.texto, fontSize: 13, fontWeight: '700', marginTop: 8, lineHeight: 17 },
-    pie: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6, gap: 4 },
+    pie: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 6,
+      gap: 4,
+    },
     nota: { flexDirection: 'row', alignItems: 'center', gap: 3 },
     notaTexto: { color: color.texto, fontSize: 12, fontWeight: '700' },
   });

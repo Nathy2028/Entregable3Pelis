@@ -27,6 +27,7 @@ Copia esta carpeta en `docs/capturas/` del repositorio.
 | 21 | 21-h3-p14-t06-a12-viendo-quita-vistaen.png | H3 · Paso 14 · T-06 | Vista → Viendo: `vistaEn` pasa a `null` (CA-A.1.2) |
 | 22 | 22-h3-p14-t06-a13-vista-otra-vez-nueva-fecha.png | H3 · Paso 14 · T-06 | Viendo → Vista: `vistaEn` con una hora nueva (CA-A.1.3). Documento con los 4 campos nuevos |
 | 23 | 23-h3-p14-t06-a14-comentario-mantiene-vistaen.png | H3 · Paso 14 · T-06 | Vista → Vista con otro comentario: cambia `actualizadoEn`, `vistaEn` se mantiene (CA-A.1.4) |
+| 24 | 24-h3-p14-t07a-h1-sin-conexion-muestra-copia.png | H3 · Paso 14 · T-07a | Modo avión: Mi lista muestra la copia guardada (5 títulos) y el aviso de sin conexión, no la lista vacía (H1, P17) |
 
 Nota: en las capturas 12 y 13 el editor muestra "unpublished changes" porque las dos
 comprobaciones de `request.time` se desactivaron solo en el simulador; no se publicaron.

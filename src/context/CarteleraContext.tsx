@@ -24,6 +24,7 @@ interface ValorCartelera {
   lista: ItemLista[];
   cargandoLista: boolean;
   sinConexion: boolean; // se muestra la copia de AsyncStorage
+  errorLista: string | null; // la carga falló por otra causa que no es la red (H12)
   recargar: () => Promise<void>;
   agregar: (obra: Obra) => Promise<void>;
   actualizar: (itemId: string, cambios: CambiosItem) => Promise<void>;
@@ -39,6 +40,7 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
   const [lista, setLista] = useState<ItemLista[]>([]);
   const [cargandoLista, setCargandoLista] = useState(false);
   const [sinConexion, setSinConexion] = useState(false);
+  const [errorLista, setErrorLista] = useState<string | null>(null);
 
   // Refs para leer el valor más reciente dentro de acciones asíncronas.
   const listaRef = useRef<ItemLista[]>([]);
@@ -54,6 +56,7 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
     setPerfil(undefined);
     setLista([]);
     setSinConexion(false);
+    setErrorLista(null);
   }
 
   useEffect(
@@ -97,8 +100,12 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
     try {
       fijarLista(await listaService.obtener(uid), uid);
       setSinConexion(false);
-    } catch {
-      setSinConexion(true); // se mantiene la última copia
+      setErrorLista(null);
+    } catch (error) {
+      // En los dos casos se mantiene la última copia y no se escribe nada.
+      const sinRed = error instanceof SinConexionError; // también si la lista vino de la caché (P17, H1)
+      setSinConexion(sinRed);
+      setErrorLista(sinRed ? null : 'Vuelve a intentarlo en un momento.'); // H12
     } finally {
       setCargandoLista(false);
     }
@@ -203,12 +210,25 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
       lista,
       cargandoLista,
       sinConexion,
+      errorLista,
       recargar,
       agregar,
       actualizar,
       eliminar,
     }),
-    [usuario, iniciando, perfil, lista, cargandoLista, sinConexion, recargar, agregar, actualizar, eliminar],
+    [
+      usuario,
+      iniciando,
+      perfil,
+      lista,
+      cargandoLista,
+      sinConexion,
+      errorLista,
+      recargar,
+      agregar,
+      actualizar,
+      eliminar,
+    ],
   );
 
   return <CarteleraContext value={valor}>{children}</CarteleraContext>;
