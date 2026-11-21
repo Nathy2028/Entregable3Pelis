@@ -34,12 +34,21 @@ Si `git diff --staged --name-only` incluye algún `.env*`, **detente**: avisa y 
 Si algún archivo en stage termina en `.ts` o `.tsx`, ejecuta:
 
 ```bash
-npm test
 npx tsc --noEmit
+npm test
 ```
 
-- Si **cualquiera** falla, muestra el error y **detente**. No hagas commit.
-- "Missing script: test" también cuenta como fallo (el script `test` todavía no existe; llega con Vitest).
+- Si **`tsc` falla**, muestra el error y **detente**. No hay excepciones.
+- Si **`npm test` falla**, muestra qué tests fallan (archivo y nombre del test) y compáralos con la sección
+  "Tests en rojo esperados" de `AGENTS.md`:
+  - Si **todos** los que fallan están en esa lista, di qué caso aplica y comprueba sus condiciones:
+    - **Caso a)** (`src/tema/coloresFijos.test.ts`): cada archivo que marca el test está en la lista de archivos de
+      `AGENTS.md`. Si marca otro archivo, no aplica.
+    - **Caso b)** (Paso 12): el commit es el `test:` del Paso 12 y solo fallan los tests nuevos de ese paso.
+  - Si se cumplen, **pide confirmación explícita** para hacer commit con esos tests en rojo y, si la usuaria dice
+    que sí, agrega al cuerpo del mensaje la línea `Tests en rojo esperados: <cuáles> (<caso>)` y una línea con el
+    porqué.
+  - Si falla **cualquier otro** test, o no se cumplen las condiciones del caso, muestra el error y **detente**.
 - Nunca borres, desactives ni saltes tests para que pasen. Nunca uses `--no-verify`.
 
 ## 5. Proponer el mensaje
