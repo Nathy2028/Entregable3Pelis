@@ -23,7 +23,7 @@ personal (por ver / viendo / vista), con calificación y comentario.
 | `src/components/` | Componentes de interfaz reutilizables |
 | `src/utils/` | Utilidades generales |
 | `src/dominio/` *(nueva)* | Funciones puras con las reglas del negocio: sin Firebase, sin React y sin `new Date()` (la fecha llega como parámetro) |
-| `src/tema/` *(nueva)* | Única fuente de colores, espacios y tamaños. Fuera de aquí no se escriben valores fijos. Mientras no exista, los colores viven en `src/theme.ts`; se migran a `src/tema/` en el Hito 3. |
+| `src/tema/` *(nueva)* | Única fuente de colores, espacios y tamaños. Fuera de aquí no se escriben valores fijos. `src/theme.ts` solo reexporta desde `src/tema/` y se retira en T-11. |
 
 ## 3. Navegación
 
@@ -69,8 +69,8 @@ casos, y solo con confirmación de la usuaria:
 
 - **a)** El test de colores fijos (`src/tema/coloresFijos.test.ts`), desde su creación hasta el ticket T-11 del
   backlog (Hito 4), siempre que solo falle por archivos que ya tenían colores fijos. Esos archivos son:
-  `src/theme.ts`, `src/components/ui.tsx`, `src/context/AccesibilidadContext.tsx`, `src/screens/BuscarScreen.tsx`
-  y `src/screens/EditarScreen.tsx`. Si el test marca cualquier otro archivo, no aplica este caso.
+  `src/components/ui.tsx`, `src/context/AccesibilidadContext.tsx`, `src/screens/BuscarScreen.tsx` y
+  `src/screens/EditarScreen.tsx`. Si el test marca cualquier otro archivo, no aplica este caso.
 - **b)** El commit `test:` del Paso 12 (tests del dominio antes de implementar), solo con los tests nuevos de ese
   paso en rojo.
 
