@@ -35,7 +35,7 @@ Método: lectura completa de `src/`, `firestore.rules`, `app.json`, `package.jso
 
 | Id | Hallazgo | Evidencia | Gravedad | Decisión |
 |---|---|---|---|---|
-| H1 | Sin red, la lista puede quedar vacía y borrar la copia local. `getDocs` no falla sin conexión: devuelve lo que tenga la caché en memoria de Firestore, que al abrir la app en frío está vacía. La app lo toma como éxito, guarda `[]` en AsyncStorage y no muestra el aviso. Por la misma causa, si se pierde la red con la app abierta, "recargar" tampoco muestra el aviso | `src/services/listaService.ts` → `obtener` (no revisa `snap.metadata.fromCache`); `CarteleraContext.tsx` → `recargar` → `fijarLista` (guarda la copia); en cambio, `perfilService.ts` → `escucharPerfil` sí revisa `fromCache` | Alta | Pendiente de reproducir en el teléfono (modo avión → cerrar la app → abrirla). Si se reproduce, se corrige; si no, pasa a riesgo conocido |
+| H1 | Sin red, la lista puede quedar vacía y borrar la copia local. `getDocs` no falla sin conexión: devuelve lo que tenga la caché en memoria de Firestore, que al abrir la app en frío está vacía. La app lo toma como éxito, guarda `[]` en AsyncStorage y no muestra el aviso. Por la misma causa, si se pierde la red con la app abierta, "recargar" tampoco muestra el aviso | `src/services/listaService.ts` → `obtener` (no revisa `snap.metadata.fromCache`); `CarteleraContext.tsx` → `recargar` → `fijarLista` (guarda la copia); en cambio, `perfilService.ts` → `escucharPerfil` sí revisa `fromCache` | Alta | Corregir ahora en T-07a (spec 01, P17) |
 | H2 | `app.json` y el README apuntan a la cuenta de Expo del grupo, así que un `eas build` o `eas update` se publicaría en el proyecto del grupo | `app.json` → `"owner": "w4730"`, `extra.eas.projectId: "f5e2edce-…"`, `android.package: "com.w4730.filmjournal"`; `README.md` → "enlazado a EAS (`@w4730/mi-cartelera`)" | Alta | Corregir ahora (requiere una cuenta de Expo propia y `eas init`) |
 | H3 | `AGENTS.md` describe Expo Router (`src/app/`, `_layout.tsx`, `Link`, `useLocalSearchParams`), pero la app usa React Navigation | `AGENTS.md` → sección "Navigation & Routing"; `src/navigation/index.tsx` → `createNativeStackNavigator` / `createBottomTabNavigator`; `src/app/` no existe; `expo-router` no está en `package.json` | Media | Corregir ahora |
 | H4 | No hay pruebas automáticas ni script `test` | `package.json` → `scripts` sin `test`; no hay jest ni archivos `*.test.*` / `*.spec.*`; no existe `.github/` | Media | Corregir ahora |
@@ -46,7 +46,7 @@ Método: lectura completa de `src/`, `firestore.rules`, `app.json`, `package.jso
 | H9 | `aMs()` devuelve `Date.now()` cuando falta una fecha. Para la épica (D2: `vistaEn = actualizadoEn`), una obra antigua podría quedar con la fecha de hoy | `src/services/listaService.ts` línea 32 → `aMs` (`t?.toMillis() ?? Date.now()`), usada en `aItem` para `agregadoEn` y `actualizadoEn` | Media | Corregir ahora en el Hito 3 |
 | H10 | Editar y Perfil no muestran carga ni error del detalle de TMDB: la sinopsis, el elenco y la tarjeta "Agregada recientemente" simplemente no aparecen | `EditarScreen.tsx` → `usePeticion` (solo usa `exito`); `PerfilScreen.tsx` → `usePeticion` (solo `exito`) | Baja | Corregir ahora en Editar; Perfil se deja así (es decorativo) |
 | H11 | El elenco usa el id de la persona como `key`; si un actor tiene dos papeles en la misma obra, se repite la key y aparece la advertencia de React | `src/components/obra.tsx` → `TarjetaElenco` (`key={p.id}`); `tmdbService.ts` → `obtenerDetalle` (mapea `id: c.id`, no `credit_id`) | Baja | Corregir ahora |
-| H12 | Cualquier error al cargar la lista se muestra como "Sin conexión", aunque sea, por ejemplo, `permission-denied` | `CarteleraContext.tsx` → `recargar` (`catch` → `setSinConexion(true)`) | Baja | Riesgo conocido |
+| H12 | Cualquier error al cargar la lista se muestra como "Sin conexión", aunque sea, por ejemplo, `permission-denied` | `CarteleraContext.tsx` → `recargar` (`catch` → `setSinConexion(true)`) | Baja | Corregir ahora en T-07a (spec 01) |
 | H13 | Durante los 400 ms del *debounce* se siguen viendo los resultados de la búsqueda anterior ("Sin resultados para «nuevo texto»" puede aparecer con datos viejos), y `cargarMas` puede pedir la página 2 del texto nuevo y sumarla a los resultados viejos | `BuscarScreen.tsx` → `peticion` (deriva de `guardada`, que no se limpia al cambiar el texto) y `cargarMas` (usa `consulta` actual con `actual.pagina + 1`) | Baja | Riesgo conocido (se corrige solo al llegar la nueva respuesta) |
 | H14 | Si falla la carga de la página siguiente, no se avisa al usuario | `BuscarScreen.tsx` → `cargarMas` (`catch {}` vacío) | Baja | Riesgo conocido |
 | H15 | No hay un script para el chequeo de tipos | `package.json` → `scripts` (solo `lint`); hay que ejecutar `npx tsc --noEmit` a mano | Baja | Corregir ahora (junto con H4) |
@@ -63,6 +63,8 @@ Método: lectura completa de `src/`, `firestore.rules`, `app.json`, `package.jso
 ## Seguimiento
 
 21/11/2026 — Paso 5: H4, H8 y H15 resueltos (Vitest, scripts test/typecheck y limpiarCambios en src/dominio con 8 pruebas).
+
+21/11/2026 — La spec 01 incluye en su alcance H1, H7, H9 y H12.
 
 ## 4. Cierre
 
