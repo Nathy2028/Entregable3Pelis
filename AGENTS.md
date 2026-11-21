@@ -1,41 +1,69 @@
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+# AGENTS.md — Cinta · Mi Cartelera Personal
 
-## Expo has changed — do not trust your training data
+## 1. Qué es la app
 
-Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
+**Cinta · Mi Cartelera Personal** es una app móvil para buscar películas y series y llevar una lista
+personal (por ver / viendo / vista), con calificación y comentario.
 
-1. Read the major version of the `expo` package in `package.json`.
-2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
-3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
+- Expo SDK 57 + React Native
+- TypeScript en modo estricto
+- Firebase Auth + Firestore
+- TMDB como API de películas y series
 
-## Commands
+## 2. Capas y carpetas
 
-Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
+| Carpeta | Contenido |
+|---|---|
+| `src/types/` | Tipos compartidos (`EstadoVisionado`, `TipoObra`, `Obra`, `ItemLista`, `Perfil`, `EstadoPeticion<T>`, etc.) |
+| `src/services/` | Único acceso a Firebase, TMDB (`fetch`) y AsyncStorage |
+| `src/context/` | Estado compartido (sesión, lista, accesibilidad) |
+| `src/hooks/` | Hooks reutilizables (por ejemplo, `usePeticion`) |
+| `src/navigation/` | Navegadores de pila y de pestañas |
+| `src/screens/` | Pantallas |
+| `src/components/` | Componentes de interfaz reutilizables |
+| `src/utils/` | Utilidades generales |
+| `src/dominio/` *(nueva)* | Funciones puras con las reglas del negocio: sin Firebase, sin React y sin `new Date()` (la fecha llega como parámetro) |
+| `src/tema/` *(nueva)* | Única fuente de colores, espacios y tamaños. Fuera de aquí no se escriben valores fijos. Mientras no exista, los colores viven en `src/theme.ts`; se migran a `src/tema/` en el Hito 3. |
+
+## 3. Navegación
+
+- **React Navigation** (pila + pestañas), en `src/navigation/`.
+- **NO usar Expo Router.** No existe `src/app/` y no se usan `Link`, `router` ni `useLocalSearchParams` de `expo-router`.
+
+## 4. Comandos de verificación
 
 ```bash
-npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
-npx expo start              # start the dev server
-npx expo lint               # lint
-npx tsc --noEmit            # typecheck
-npx expo-doctor             # diagnose dependency and config issues
-npx expo install --fix      # fix incompatible package versions
+npm test             # pruebas
+npx tsc --noEmit     # chequeo de tipos
+npx expo lint        # lint
 ```
 
-Run lint and typecheck before declaring any task done.
+`npm test` y `npx tsc --noEmit` deben pasar antes de cada commit de código.
 
-## Navigation & Routing
+## 5. Reglas
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
-- Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
-- Docs: https://docs.expo.dev/router/introduction.md
+- Nunca leer, abrir ni mostrar `.env`.
+- Pantallas y componentes no importan Firebase: todo pasa por `src/services/`.
+- Sin `any`.
+- Dependencias nuevas solo si la spec las justifica, se instalan con `npx expo install` y deben ser compatibles con Expo Go. No usar librerías de gráficas.
+- No borrar, desactivar ni saltar tests para que pasen.
+- No modificar `DESIGN.md` por iniciativa propia.
+- Ningún código sin su documento: primero va el commit `docs:` y después el de código.
+- Los commits se hacen con la skill `/commit`.
 
-## Building with EAS
+## 6. Cómo trabajar conmigo
 
-Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run EAS CLI as `bunx eas-cli <command>` in Bun projects, or `npx eas-cli@latest <command>` otherwise; substitute that for bare `eas` in docs examples.
-Docs: https://docs.expo.dev/eas/index.md
+- Primero explora y propón. No edites sin que yo apruebe el plan.
+- Explícame las causas y las decisiones en palabras simples.
+- Después de cada cambio, dime qué prueba concreta hago en el teléfono, en la consola o en Firebase para verificarlo.
+- Ejecuta `npx tsc --noEmit` antes de decir que algo está terminado.
 
-## Rules
+## 7. Diseño
 
-- If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
-- Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+Antes de crear o modificar cualquier archivo en src/screens/ o src/components/, lee DESIGN.md.
+
+## 8. Expo cambia entre versiones
+
+Expo introduce cambios incompatibles en cada versión del SDK, así que las APIs que recuerdes pueden
+tener otro nombre, estar en otro lugar o no existir. Antes de usar una API de Expo, consulta la
+documentación de SDK 57: https://docs.expo.dev/versions/v57.0.0/
