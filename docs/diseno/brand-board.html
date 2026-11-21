@@ -24,7 +24,7 @@
     --barraInactiva: #3A3D2E;
 
     --r-s: 10px; --r-m: 14px; --r-l: 20px;
-    --e1: 4px; --e2: 8px; --e3: 12px; --e4: 16px; --e5: 20px; --e6: 24px; --e7: 32px;
+    --esp-xs: 4px; --esp-s: 8px; --esp-m: 12px; --esp-l: 16px; --esp-margen: 20px; --esp-xl: 24px; --esp-xxl: 32px;
     --toque: 44px;
     --fuente: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
@@ -169,7 +169,7 @@
   .c-estado p { margin: 0; font-size: 13px; color: var(--textoSecundario); max-width: 260px; }
   .c-giro { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--superficieAlta); border-top-color: var(--acento); animation: giro 0.9s linear infinite; }
   @keyframes giro { to { transform: rotate(360deg); } }
-  body.contraste .c-giro { animation-duration: 0s; }
+  @media (prefers-reduced-motion: reduce) { .c-giro { animation: none; } }
   .c-progreso { width: 100%; height: 8px; background: var(--superficieAlta); border-radius: 999px; overflow: hidden; }
   .c-progreso i { display: block; height: 100%; width: 40%; background: var(--acento); border-radius: 999px; }
   .c-pestanas { display: flex; justify-content: space-around; background: var(--superficie); border-top: 1px solid var(--borde); padding: 8px 6px 22px; }
@@ -207,7 +207,7 @@
 
   <header class="portada">
     <div>
-      <span class="num">Brand board · v2 · 21/11/2026</span>
+      <span class="num">Brand board · v3 · 21/11/2026</span>
       <h1>Cinta · Mi año en cine</h1>
       <p>Decisiones visuales de la app, antes de escribirlas para el agente en <code>DESIGN.md</code> y en código en <code>src/tema/</code>. Sale de <code>docs/diseno/BRIEF.md</code>: <strong>íntima, editorial, enérgica</strong>; al ver su año, el usuario siente <strong>orgullo</strong>.</p>
     </div>
@@ -291,7 +291,7 @@
         <span class="c-etiqueta viendo">Viendo</span>
         <strong style="margin-top:10px"><code>estadoViendo</code></strong>
         <span class="nota">Fondo <code>acentoSuave</code> · texto <code>acento</code></span>
-        <div class="ratio ok" style="color:var(--acento)">12,0 : 1 (alto contraste 9,2)</div>
+        <div class="ratio ok" style="color:var(--acento)">11,9 : 1 (alto contraste 9,2)</div>
       </div>
       <div class="par" style="background:var(--superficie)">
         <span class="c-etiqueta porver">Por ver</span>
@@ -303,7 +303,7 @@
         <span style="color:var(--peligro);font-weight:700;font-size:14px">No pudimos cargar tu resumen</span>
         <strong style="margin-top:10px"><code>error</code></strong>
         <span class="nota">Texto <code>peligro</code> sobre <code>peligroSuave</code></span>
-        <div class="ratio ok" style="color:var(--acento)">6,2 : 1 · texto blanco encima 14,3</div>
+        <div class="ratio ok" style="color:var(--acento)">6,2 : 1 · texto blanco encima 14,2</div>
       </div>
     </div>
 
@@ -318,7 +318,7 @@
         <tr><td><code>peligro</code></td><td class="ok">7,8</td><td class="ok">7,3</td><td class="ok">6,8</td><td class="ok">9,6</td></tr>
         <tr><td><code>sobreAcento</code> sobre <code>acento</code></td><td colspan="3" class="ok">17,1</td><td class="ok">17,1</td></tr>
       </table>
-      <p class="nota">Calculado con la fórmula de luminancia relativa de WCAG 2.1. Regla: <code>textoTenue</code> nunca se usa sobre fondos más claros que <code>superficieAlta</code>.</p>
+      <p class="nota">Calculado con la fórmula de luminancia relativa de WCAG 2.1. Reglas: <code>textoTenue</code> nunca se usa sobre fondos más claros que <code>superficieAlta</code> ni sobre <code>acentoSuave</code> (daría 3,98 : 1); sobre <code>acentoSuave</code> y <code>peligroSuave</code> el texto va en <code>texto</code>, <code>acento</code> o <code>peligro</code>.</p>
     </div>
   </section>
 
@@ -436,7 +436,7 @@
           <div class="apoyo">Solo cuentan películas</div>
           <div class="falta">ⓘ 2 películas sin duración no suman horas</div>
         </div>
-        <p class="nota">Variantes: número (dato 48), texto (26/800 para género o director), con aviso de dato faltante en <code>textoTenue</code>.</p>
+        <p class="nota">Variantes: número (dato 48), texto (26/800 para género o director), con aviso de dato faltante en <code>textoTenue</code>. <strong>Compacta</strong> (cuando van dos por fila en la pantalla): número 40, texto 22, relleno 14 vertical y 16 horizontal.</p>
       </div>
       <div>
         <span class="t-etiqueta">Barras por mes <span class="nuevo">nuevo</span></span>
@@ -457,7 +457,7 @@
             <div class="col"><div class="barra" style="height:0"></div><span class="mes">D</span></div>
           </div>
         </div>
-        <p class="nota">12 barras siempre, también con 0 (línea mínima de 3 px). Alto proporcional al mes máximo. Se construyen con <code>View</code>, sin librerías de gráficas. Para lectores de pantalla, la tarjeta entera lleva una etiqueta con los 12 valores.</p>
+        <p class="nota">12 barras siempre, también con 0 (línea mínima de 3 px). Alto del área: 120 en el board, 96 dentro de la pantalla. Alto proporcional al mes máximo. Se construyen con <code>View</code>, sin librerías de gráficas. Para lectores de pantalla, la tarjeta entera lleva una etiqueta con los 12 valores.</p>
       </div>
       <div>
         <span class="t-etiqueta">Obra destacada <span class="nuevo">nuevo</span></span>
@@ -471,7 +471,7 @@
             <p>Película · vista el 12 de octubre</p>
           </div>
         </div>
-        <p class="nota">Sin obras calificadas: la tarjeta cambia por un estado que invita a calificar (ver estados).</p>
+        <p class="nota">Póster de portada: 190 de alto en el board, 140 dentro de la pantalla. Sin obras calificadas: la tarjeta cambia por un estado que invita a calificar (ver estados).</p>
       </div>
     </div>
 
@@ -485,17 +485,17 @@
         <span class="t-etiqueta">Pestaña nueva en la barra <span class="nuevo">nuevo</span></span>
         <div class="c-pestanas" style="margin-top:12px;border-radius:var(--r-m);padding-bottom:10px">
           <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Buscar</div>
-          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Mi lista</div>
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mi lista</div>
           <div class="activa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Mi año</div>
           <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</div>
         </div>
-        <p class="nota">Va entre "Mi lista" y "Perfil". Ícono de barras (Lucide <code>chart-column</code>).</p>
+        <p class="nota">Va entre "Mi lista" y "Perfil". Ícono de barras (Lucide <code>chart-column</code>). Las otras pestañas conservan sus íconos actuales (Mi lista = <code>bookmark</code>).</p>
       </div>
     </div>
 
     <h3>Estados de pantalla <span class="nuevo">nuevo</span></h3>
     <div class="rejilla r3">
-      <div class="c-estado"><div class="c-giro" role="progressbar" aria-label="Cargando"></div><strong>Armando tu año…</strong><p>Un momento y lo tienes.</p></div>
+      <div class="c-estado"><div class="c-giro" role="progressbar" aria-label="Cargando"></div><strong>Armando tu año…</strong><p>Un momento y lo tienes.</p><p class="nota" style="margin:0">Con "reducir movimiento" el indicador queda quieto.</p></div>
       <div class="c-estado"><strong>Completando datos de TMDB</strong><div class="c-progreso" role="progressbar" aria-valuenow="2" aria-valuemax="5"><i></i></div><p>Completando 2 de 5 obras. Ya casi.</p></div>
       <div class="c-estado"><div class="icono"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div><strong>Todavía no hay nada en 2025</strong><p>¿Empezamos? Marca lo que veas y aquí aparecerá tu año.</p><button class="c-boton primario pequeno">Ir a Mi lista</button></div>
       <div class="c-estado err"><div class="icono"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg></div><strong>Uy, no pudimos cargar tu resumen</strong><p>Revisa tu conexión y lo intentamos otra vez.</p><button class="c-boton secundario pequeno">Reintentar</button></div>
@@ -504,7 +504,7 @@
     </div>
     <div class="rejilla r2" style="margin-top:16px">
       <div class="c-dato"><span class="t-etiqueta">Director más visto</span><div class="valor texto" style="color:var(--textoSecundario)">Aún sin director favorito</div><div class="apoyo">No hay datos suficientes: a las películas de este año les falta el director en TMDB.</div></div>
-      <div class="c-dato"><span class="t-etiqueta">Tu mejor calificada</span><div class="valor texto" style="color:var(--textoSecundario)">Aún sin favorita</div><div class="apoyo">Califica lo que viste y te contamos cuál fue tu favorita.</div></div>
+      <div class="c-dato"><span class="t-etiqueta">Tu mejor calificada</span><div class="valor texto" style="color:var(--textoSecundario)">Aún sin favorita</div><div class="apoyo">Califica lo que viste y te contamos cuál fue tu favorita del año.</div></div>
     </div>
   </section>
 
@@ -560,7 +560,7 @@
         </div>
         <div class="c-pestanas">
           <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Buscar</div>
-          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Mi lista</div>
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mi lista</div>
           <div class="activa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Mi año</div>
           <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</div>
         </div>
@@ -575,7 +575,7 @@
         </div>
         <div class="c-pestanas">
           <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Buscar</div>
-          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Mi lista</div>
+          <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Mi lista</div>
           <div class="activa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg>Mi año</div>
           <div><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</div>
         </div>
@@ -597,8 +597,8 @@
         <div class="ejemplo"><small>Error</small>Uy, no pudimos cargar tu resumen. Revisa tu conexión y lo intentamos otra vez.</div>
         <div class="ejemplo"><small>Sin conexión</small>Estás sin conexión. No pasa nada: te mostramos lo último que guardamos.</div>
         <div class="ejemplo"><small>Datos faltantes</small>2 obras se quedaron sin datos de TMDB, así que no cuentan en horas, género ni director.</div>
-        <div class="ejemplo"><small>Destacada sin calificar</small>Califica lo que viste y te contamos cuál fue tu favorita del año.</div>
-        <div class="ejemplo"><small>Director sin datos</small>Aún no sabemos quién es tu director favorito. No hay datos suficientes: a las películas de este año les falta el director en TMDB.</div>
+        <div class="ejemplo"><small>Destacada sin calificar</small><strong>Aún sin favorita</strong> · Califica lo que viste y te contamos cuál fue tu favorita del año.</div>
+        <div class="ejemplo"><small>Director sin datos</small><strong>Aún sin director favorito</strong> · No hay datos suficientes: a las películas de este año les falta el director en TMDB.</div>
       </div>
       <div class="lamina">
         <h3 style="margin-top:0">Sí y no</h3>
@@ -618,7 +618,7 @@
   </section>
 
   <footer>
-    Cinta · brand board v2 · Fuente: <code>docs/diseno/BRIEF.md</code>. Siguiente: <code>DESIGN.md</code> (para el agente) y <code>src/tema/</code> (en código). Pósters y nombres de obras y personas inventados.
+    Cinta · brand board v3 · Fuente: <code>docs/diseno/BRIEF.md</code>. Siguiente: <code>DESIGN.md</code> (para el agente) y <code>src/tema/</code> (en código). Pósters y nombres de obras y personas inventados.
   </footer>
 </div>
 <script>
