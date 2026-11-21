@@ -30,10 +30,15 @@ export const db = getFirestore(app);
 /** Sin red, Firestore deja la escritura en cola y la promesa no se resuelve hasta reconectar. */
 export class SinConexionError extends Error {}
 
-export function conTiempoMaximo<T>(promesa: Promise<T>, ms = 8000): Promise<T> {
+/** Rechaza con `crearError()` si la promesa no termina en `ms`. Por omisión, el error de Firestore sin red. */
+export function conTiempoMaximo<T>(
+  promesa: Promise<T>,
+  ms = 8000,
+  crearError: () => Error = () => new SinConexionError('Sin conexión con Firestore'),
+): Promise<T> {
   let temporizador: ReturnType<typeof setTimeout> | undefined;
   const limite = new Promise<never>((_, rechazar) => {
-    temporizador = setTimeout(() => rechazar(new SinConexionError('Sin conexión con Firestore')), ms);
+    temporizador = setTimeout(() => rechazar(crearError()), ms);
   });
   return Promise.race([promesa, limite]).finally(() => clearTimeout(temporizador));
 }

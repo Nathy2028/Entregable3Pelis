@@ -38,6 +38,7 @@ export interface DetalleObra extends Obra {
   duracion: string; // "1 h 50 min" o "3 temporadas"; '' si no hay dato
   elenco: MiembroElenco[];
   trailerKey: string | null; // clave de YouTube
+  datos: DatosTmdb; // lo que se guarda en Mi lista al agregar (D5)
 }
 
 /** Datos de TMDB que se guardan en cada obra para el resumen anual (D5). Se escriben siempre juntos. */

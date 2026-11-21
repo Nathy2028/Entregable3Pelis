@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { useState } from 'react';
 import { Alert, Linking, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Estrellas, Poster, TarjetaElenco, TarjetaSinopsis } from '../components/obra';
@@ -20,13 +21,17 @@ export function DetalleScreen({ route, navigation }: PropsPila<'Detalle'>) {
   const itemId = crearItemId(tipo, tmdbId);
   const [peticion, reintentar] = usePeticion(itemId, () => obtenerDetalle(tipo, tmdbId));
   const enLista = lista.some((i) => i.id === itemId);
+  const [agregando, setAgregando] = useState(false);
   const detalle = peticion.estado === 'exito' ? peticion.datos : null;
 
   const editar = () => navigation.navigate('Editar', { tipo, tmdbId });
   const agregarALista = () => {
-    if (!detalle) return;
-    // La lista se actualiza al instante; solo avisamos si Firestore rechaza la escritura.
-    agregar(detalle).catch(() => Alert.alert('No se pudo agregar', 'Vuelve a intentarlo en un momento.'));
+    if (!detalle || agregando) return;
+    // Espera a lo sumo 5 s los datos de TMDB; solo avisamos si Firestore rechaza la escritura.
+    setAgregando(true);
+    agregar(detalle)
+      .catch(() => Alert.alert('No se pudo agregar', 'Vuelve a intentarlo en un momento.'))
+      .finally(() => setAgregando(false));
   };
   const compartir = () => {
     if (!detalle) return;
@@ -111,7 +116,7 @@ export function DetalleScreen({ route, navigation }: PropsPila<'Detalle'>) {
             {enLista ? (
               <Boton titulo="Editar en mi lista" icono="bookmark-check" onPress={editar} />
             ) : (
-              <Boton titulo="Agregar a mi lista" icono="plus" onPress={agregarALista} />
+              <Boton titulo="Agregar a mi lista" icono="plus" onPress={agregarALista} cargando={agregando} />
             )}
             {detalle.trailerKey && (
               <Boton

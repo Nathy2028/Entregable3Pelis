@@ -10,7 +10,7 @@ import {
   Timestamp,
   updateDoc,
 } from 'firebase/firestore';
-import type { CambiosItem, EstadoVisionado, ItemLista, Obra, TipoObra } from '../types';
+import type { CambiosItem, DatosTmdb, EstadoVisionado, ItemLista, Obra, TipoObra } from '../types';
 import { guardarCache, leerCache } from './cache';
 import { conTiempoMaximo, db } from './firebase';
 
@@ -71,7 +71,11 @@ export async function obtener(uid: string): Promise<ItemLista[]> {
   return snap.docs.map((d) => normalizarItem({ ...d.data({ serverTimestamps: 'estimate' }), id: d.id }));
 }
 
-export async function agregar(uid: string, obra: Obra): Promise<void> {
+/**
+ * Con `datos` escribe también los 3 campos de TMDB (D5); con null no escribe ninguno (P19, P9): así la obra queda
+ * como "nunca completada" y D6 la completa después.
+ */
+export async function agregar(uid: string, obra: Obra, datos: DatosTmdb | null): Promise<void> {
   await conTiempoMaximo(
     setDoc(doc(coleccion(uid), crearItemId(obra.tipo, obra.tmdbId)), {
       ...soloObra(obra),
@@ -80,6 +84,8 @@ export async function agregar(uid: string, obra: Obra): Promise<void> {
       comentario: '',
       agregadoEn: serverTimestamp(),
       actualizadoEn: serverTimestamp(),
+      // Campo por campo: las reglas usan hasOnly y no aceptan claves de más.
+      ...(datos && { generos: datos.generos, duracionMin: datos.duracionMin, directores: datos.directores }),
     }),
   );
 }

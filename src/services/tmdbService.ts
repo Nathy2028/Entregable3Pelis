@@ -1,4 +1,6 @@
+import { armarDatosTmdb } from '../dominio/datosTmdb';
 import type {
+  DatosTmdb,
   DetalleObra,
   PaginaBusqueda,
   ResultadoBusqueda,
@@ -7,6 +9,7 @@ import type {
   TmdbPagina,
   TmdbResultado,
 } from '../types';
+import { conTiempoMaximo } from './firebase';
 
 const API = 'https://api.themoviedb.org/3';
 // ponytail: images.secure_base_url de /configuration fijo; pedir /configuration al iniciar si TMDB lo cambiara.
@@ -20,9 +23,19 @@ export function urlImagen(path: string | null, tamano: TamanoImagen): string | n
   return path ? `${IMAGENES}${tamano}${path}` : null;
 }
 
+/** Fallo al pedir a TMDB. `status` es el código HTTP, o null si no hubo respuesta. */
+export class TmdbError extends Error {
+  constructor(
+    mensaje: string,
+    readonly status: number | null,
+  ) {
+    super(mensaje);
+  }
+}
+
 async function pedir<T>(ruta: string, params: Record<string, string>): Promise<T> {
   const token = process.env.EXPO_PUBLIC_TMDB_TOKEN;
-  if (!token) throw new Error('Falta EXPO_PUBLIC_TMDB_TOKEN en el archivo .env.');
+  if (!token) throw new TmdbError('Falta EXPO_PUBLIC_TMDB_TOKEN en el archivo .env.', null);
 
   const query = Object.entries({ language: IDIOMA, ...params })
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
@@ -34,11 +47,13 @@ async function pedir<T>(ruta: string, params: Record<string, string>): Promise<T
       headers: { Authorization: `Bearer ${token}`, accept: 'application/json' },
     });
   } catch {
-    throw new Error('Sin conexión. Revisa tu internet y vuelve a intentarlo.');
+    throw new TmdbError('Sin conexión. Revisa tu internet y vuelve a intentarlo.', null);
   }
-  if (respuesta.status === 429) throw new Error('TMDB recibió demasiadas peticiones. Espera unos segundos.');
-  if (respuesta.status === 401) throw new Error('El token de TMDB no es válido. Revisa tu archivo .env.');
-  if (!respuesta.ok) throw new Error(`TMDB no respondió (error ${respuesta.status}).`);
+  const { status } = respuesta;
+  if (status === 429)
+    throw new TmdbError('TMDB recibió demasiadas peticiones. Espera unos segundos.', status);
+  if (status === 401) throw new TmdbError('El token de TMDB no es válido. Revisa tu archivo .env.', status);
+  if (!respuesta.ok) throw new TmdbError(`TMDB no respondió (error ${status}).`, status);
   return (await respuesta.json()) as T;
 }
 
@@ -67,8 +82,10 @@ export async function buscar(titulo: string, pagina = 1): Promise<PaginaBusqueda
 }
 
 function duracion(d: TmdbDetalle): string {
-  if (d.runtime) return d.runtime < 60 ? `${d.runtime} min` : `${Math.floor(d.runtime / 60)} h ${d.runtime % 60} min`;
-  if (d.number_of_seasons) return `${d.number_of_seasons} ${d.number_of_seasons === 1 ? 'temporada' : 'temporadas'}`;
+  if (d.runtime)
+    return d.runtime < 60 ? `${d.runtime} min` : `${Math.floor(d.runtime / 60)} h ${d.runtime % 60} min`;
+  if (d.number_of_seasons)
+    return `${d.number_of_seasons} ${d.number_of_seasons === 1 ? 'temporada' : 'temporadas'}`;
   return '';
 }
 
@@ -104,7 +121,28 @@ export async function obtenerDetalle(tipo: TipoObra, id: number): Promise<Detall
       fotoPath: c.profile_path,
     })),
     trailerKey: (videos.find((v) => v.type === 'Trailer') ?? videos[0])?.key ?? null,
+    datos: armarDatosTmdb(tipo, d),
   };
   detalles.set(clave, detalle);
   return detalle;
+}
+
+const ESPERA_AL_AGREGAR = 5000; // ms (P19)
+
+/**
+ * D5: géneros, duración y directores para guardar al agregar. Si TMDB falla o tarda más de 5 s devuelve null y la
+ * obra se agrega sin ellos (P19); D6 la completa al abrir el resumen. Nunca lanza. Una respuesta que llega tarde
+ * no se usa aquí, pero queda en la memoria del detalle.
+ */
+export async function obtenerDatosParaAgregar(tipo: TipoObra, id: number): Promise<DatosTmdb | null> {
+  try {
+    const detalle = await conTiempoMaximo(
+      obtenerDetalle(tipo, id),
+      ESPERA_AL_AGREGAR,
+      () => new TmdbError('TMDB no respondió a tiempo.', null),
+    );
+    return detalle.datos;
+  } catch {
+    return null;
+  }
 }

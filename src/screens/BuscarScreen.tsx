@@ -36,6 +36,7 @@ export function BuscarScreen({ navigation }: PropsPestana<'Buscar'>) {
   const [guardada, setPeticion] = useState<EstadoPeticion<PaginaBusqueda>>(INACTIVO);
   const [cargandoMas, setCargandoMas] = useState(false);
   const [intento, setIntento] = useState(0);
+  const [agregando, setAgregando] = useState<ReadonlySet<string>>(new Set());
 
   const consulta = entrada.trim();
   const peticion = consulta ? guardada : INACTIVO; // campo vacío = sin búsqueda
@@ -87,7 +88,18 @@ export function BuscarScreen({ navigation }: PropsPestana<'Buscar'>) {
   const guardar = useCallback(
     (obra: ResultadoBusqueda, guardado: boolean) => {
       if (guardado) return navigation.navigate('Editar', { tipo: obra.tipo, tmdbId: obra.tmdbId });
-      agregar(obra).catch(() => Alert.alert('No se pudo agregar', 'Vuelve a intentarlo en un momento.'));
+      // Mientras se esperan los datos de TMDB (a lo sumo 5 s) el marcador muestra que está cargando.
+      const id = claveDe(obra);
+      setAgregando((prev) => new Set(prev).add(id));
+      agregar(obra)
+        .catch(() => Alert.alert('No se pudo agregar', 'Vuelve a intentarlo en un momento.'))
+        .finally(() =>
+          setAgregando((prev) => {
+            const siguiente = new Set(prev);
+            siguiente.delete(id);
+            return siguiente;
+          }),
+        );
     },
     [navigation, agregar],
   );
@@ -98,11 +110,12 @@ export function BuscarScreen({ navigation }: PropsPestana<'Buscar'>) {
         obra={item}
         ancho={anchoTarjeta}
         guardado={guardados.has(claveDe(item))}
+        agregando={agregando.has(claveDe(item))}
         onAbrir={abrir}
         onGuardar={guardar}
       />
     ),
-    [anchoTarjeta, guardados, abrir, guardar],
+    [anchoTarjeta, guardados, agregando, abrir, guardar],
   );
 
   return (
@@ -131,7 +144,12 @@ export function BuscarScreen({ navigation }: PropsPestana<'Buscar'>) {
           </View>
         )}
         {entrada.length > 0 && (
-          <Pressable accessibilityRole="button" accessibilityLabel="Borrar búsqueda" onPress={() => setEntrada('')} style={s.borrar}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Borrar búsqueda"
+            onPress={() => setEntrada('')}
+            style={s.borrar}
+          >
             <Lucide name="x" size={18} color={color.textoSecundario} />
           </Pressable>
         )}
@@ -174,7 +192,9 @@ export function BuscarScreen({ navigation }: PropsPestana<'Buscar'>) {
               <Text style={texto.pequeno}>{peticion.datos.total} coincidencias en TMDB</Text>
             </View>
           }
-          ListFooterComponent={cargandoMas ? <ActivityIndicator color={color.acento} style={s.pie} /> : undefined}
+          ListFooterComponent={
+            cargandoMas ? <ActivityIndicator color={color.acento} style={s.pie} /> : undefined
+          }
           onEndReached={cargarMas}
           onEndReachedThreshold={0.6}
           keyboardDismissMode="on-drag"
@@ -192,12 +212,14 @@ const TarjetaResultado = memo(function TarjetaResultado({
   obra,
   ancho,
   guardado,
+  agregando,
   onAbrir,
   onGuardar,
 }: {
   obra: ResultadoBusqueda;
   ancho: number;
   guardado: boolean;
+  agregando: boolean;
   onAbrir: (obra: ResultadoBusqueda) => void;
   onGuardar: (obra: ResultadoBusqueda, guardado: boolean) => void;
 }) {
@@ -217,16 +239,24 @@ const TarjetaResultado = memo(function TarjetaResultado({
           <Etiqueta texto={obra.tipo === 'movie' ? 'Película' : 'Serie'} tono="contorno" />
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={guardado ? `Editar ${obra.titulo} en mi lista` : `Agregar ${obra.titulo} a mi lista`}
+            accessibilityLabel={
+              guardado ? `Editar ${obra.titulo} en mi lista` : `Agregar ${obra.titulo} a mi lista`
+            }
+            accessibilityState={{ busy: agregando && !guardado }}
+            disabled={agregando && !guardado}
             onPress={() => onGuardar(obra, guardado)}
             style={s.guardar}
           >
             <View style={[s.guardarCirculo, guardado && s.guardarActivo]}>
-              <Lucide
-                name={guardado ? 'bookmark-check' : 'bookmark'}
-                size={16}
-                color={guardado ? color.sobreAcento : color.texto}
-              />
+              {agregando && !guardado ? (
+                <ActivityIndicator size="small" color={color.texto} />
+              ) : (
+                <Lucide
+                  name={guardado ? 'bookmark-check' : 'bookmark'}
+                  size={16}
+                  color={guardado ? color.sobreAcento : color.texto}
+                />
+              )}
             </View>
           </Pressable>
         </View>

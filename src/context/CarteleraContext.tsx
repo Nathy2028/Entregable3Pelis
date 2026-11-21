@@ -14,6 +14,7 @@ import { SinConexionError } from '../services/firebase';
 import * as listaService from '../services/listaService';
 import { crearItemId, soloObra } from '../services/listaService';
 import { escucharPerfil, guardarCachePerfil, leerCachePerfil } from '../services/perfilService';
+import { obtenerDatosParaAgregar } from '../services/tmdbService';
 import type { CambiosItem, ItemLista, Obra, Perfil } from '../types';
 
 interface ValorCartelera {
@@ -42,6 +43,7 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
   // Refs para leer el valor más reciente dentro de acciones asíncronas.
   const listaRef = useRef<ItemLista[]>([]);
   const uidRef = useRef<string | null>(null);
+  const agregandoRef = useRef(new Set<string>()); // ids que esperan los datos de TMDB
   const uid = usuario?.uid ?? null;
 
   // Al cambiar de cuenta se limpia el estado de la anterior durante el render (patrón recomendado por
@@ -136,23 +138,33 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
   const agregar = useCallback(
     async (obra: Obra) => {
       const id = crearItemId(obra.tipo, obra.tmdbId);
-      if (listaRef.current.some((i) => i.id === id)) return; // RF4: sin duplicados
-      const ahora = Date.now();
-      const item: ItemLista = {
-        ...soloObra(obra),
-        id,
-        estado: 'por_ver',
-        calificacionPersonal: null,
-        comentario: '',
-        agregadoEn: ahora,
-        actualizadoEn: ahora,
-        // Hasta T-05 se agrega sin datos de TMDB; D6 los completa al abrir el resumen.
-        vistaEn: null,
-        generos: null,
-        duracionMin: null,
-        directores: null,
-      };
-      await mutar([item, ...listaRef.current], (u) => listaService.agregar(u, obra));
+      const enLista = () => listaRef.current.some((i) => i.id === id);
+      // RF4: sin duplicados, tampoco con un segundo toque mientras se esperan los datos de TMDB.
+      if (enLista() || agregandoRef.current.has(id)) return;
+      agregandoRef.current.add(id);
+      const deUid = uidRef.current;
+      try {
+        // A lo sumo 5 s; null si TMDB falla o tarda (P19): se agrega sin datos y D6 los completa después.
+        const datos = await obtenerDatosParaAgregar(obra.tipo, obra.tmdbId);
+        if (uidRef.current !== deUid || enLista()) return; // cambió la cuenta o ya se agregó mientras tanto
+        const ahora = Date.now();
+        const item: ItemLista = {
+          ...soloObra(obra),
+          id,
+          estado: 'por_ver',
+          calificacionPersonal: null,
+          comentario: '',
+          agregadoEn: ahora,
+          actualizadoEn: ahora,
+          vistaEn: null,
+          generos: datos?.generos ?? null,
+          duracionMin: datos?.duracionMin ?? null,
+          directores: datos?.directores ?? null,
+        };
+        await mutar([item, ...listaRef.current], (u) => listaService.agregar(u, obra, datos));
+      } finally {
+        agregandoRef.current.delete(id);
+      }
     },
     [mutar],
   );
