@@ -23,9 +23,13 @@ Copia esta carpeta en `docs/capturas/` del repositorio.
 | 17 | 17-firestore-documento-antes-de-la-epica.jpg | H3 · referencia | Documento de mi_lista sin los campos nuevos (para comparar después de T-05) |
 | 18 | 18-h3-p14-t05-pelicula-con-datos-tmdb.png | H3 · Paso 14 · T-05 | Película agregada (Interestelar): `generos` en español con "Ciencia ficción", `duracionMin: 169` y `directores: ["Christopher Nolan"]` (CA-A.2.4, CA-A.2.8) |
 | 19 | 19-h3-p14-t05-serie-con-datos-tmdb.png | H3 · Paso 14 · T-05 | Serie agregada (Breaking Bad): `generos` con datos, `duracionMin: null` y `directores` vacía (CA-A.2.5) |
+| 20 | 20-h3-p14-t06-a11-vista-pone-vistaen.png | H3 · Paso 14 · T-06 | Por ver → Vista: aparece `vistaEn` con la misma hora que `actualizadoEn` (CA-A.1.1) |
+| 21 | 21-h3-p14-t06-a12-viendo-quita-vistaen.png | H3 · Paso 14 · T-06 | Vista → Viendo: `vistaEn` pasa a `null` (CA-A.1.2) |
+| 22 | 22-h3-p14-t06-a13-vista-otra-vez-nueva-fecha.png | H3 · Paso 14 · T-06 | Viendo → Vista: `vistaEn` con una hora nueva (CA-A.1.3). Documento con los 4 campos nuevos |
+| 23 | 23-h3-p14-t06-a14-comentario-mantiene-vistaen.png | H3 · Paso 14 · T-06 | Vista → Vista con otro comentario: cambia `actualizadoEn`, `vistaEn` se mantiene (CA-A.1.4) |
 
 Nota: en las capturas 12 y 13 el editor muestra "unpublished changes" porque las dos
 comprobaciones de `request.time` se desactivaron solo en el simulador; no se publicaron.
 
-Pendientes para la entrega final: resumen con datos, resumen vacío y un documento
-de mi_lista con `vistaEn` (llega en T-06; los 3 campos de TMDB ya están en las capturas 18 y 19).
+Pendientes para la entrega final: resumen con datos, resumen vacío y la salida de npm test
+en verde (T-11). El documento de mi_lista con los 4 campos nuevos ya está en las capturas 22 y 23.

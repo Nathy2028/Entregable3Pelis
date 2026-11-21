@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { limpiarCambios } from '../dominio/reglasLista';
+import { limpiarCambios, transicionVistaEn } from '../dominio/reglasLista';
 import { escucharSesion, type User } from '../services/authService';
 import { SinConexionError } from '../services/firebase';
 import * as listaService from '../services/listaService';
@@ -172,10 +172,16 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
   const actualizar = useCallback(
     async (itemId: string, cambios: CambiosItem) => {
       const limpios = limpiarCambios(cambios); // RF6
+      const antes = listaRef.current.find((i) => i.id === itemId);
+      const transicion = antes ? transicionVistaEn(antes.estado, limpios.estado) : 'mantener'; // D1
+      const ahora = Date.now();
+      // P11: la hora del teléfono hasta que la próxima carga traiga la del servidor.
+      const vistaEn = (i: ItemLista) =>
+        transicion === 'poner' ? ahora : transicion === 'quitar' ? null : i.vistaEn;
       const nueva = listaRef.current.map((i) =>
-        i.id === itemId ? { ...i, ...limpios, actualizadoEn: Date.now() } : i,
+        i.id === itemId ? { ...i, ...limpios, actualizadoEn: ahora, vistaEn: vistaEn(i) } : i,
       );
-      await mutar(nueva, (u) => listaService.actualizar(u, itemId, limpios));
+      await mutar(nueva, (u) => listaService.actualizar(u, itemId, limpios, transicion));
     },
     [mutar],
   );

@@ -90,9 +90,23 @@ export async function agregar(uid: string, obra: Obra, datos: DatosTmdb | null):
   );
 }
 
-export async function actualizar(uid: string, itemId: string, cambios: CambiosItem): Promise<void> {
+/**
+ * D1: 'poner' → hora del servidor (la misma que actualizadoEn); 'quitar' → null; 'mantener' → el campo no se envía
+ * y conserva su valor (P5).
+ */
+export async function actualizar(
+  uid: string,
+  itemId: string,
+  cambios: CambiosItem,
+  vistaEn: 'poner' | 'quitar' | 'mantener',
+): Promise<void> {
   await conTiempoMaximo(
-    updateDoc(doc(coleccion(uid), itemId), { ...cambios, actualizadoEn: serverTimestamp() }),
+    updateDoc(doc(coleccion(uid), itemId), {
+      ...cambios,
+      actualizadoEn: serverTimestamp(),
+      ...(vistaEn === 'poner' && { vistaEn: serverTimestamp() }),
+      ...(vistaEn === 'quitar' && { vistaEn: null }),
+    }),
   );
 }
 
