@@ -15,7 +15,7 @@ import * as listaService from '../services/listaService';
 import { crearItemId, soloObra } from '../services/listaService';
 import { escucharPerfil, guardarCachePerfil, leerCachePerfil } from '../services/perfilService';
 import { obtenerDatosParaAgregar } from '../services/tmdbService';
-import type { CambiosItem, ItemLista, Obra, Perfil } from '../types';
+import type { CambiosItem, DatosTmdb, ItemLista, Obra, Perfil } from '../types';
 
 interface ValorCartelera {
   usuario: User | null;
@@ -25,10 +25,13 @@ interface ValorCartelera {
   cargandoLista: boolean;
   sinConexion: boolean; // se muestra la copia de AsyncStorage
   errorLista: string | null; // la carga falló por otra causa que no es la red (H12)
-  recargar: () => Promise<void>;
+  /** La lista que llegó del servidor, o null si no se pudo traer (sin red, otro error o cambió la cuenta). */
+  recargar: () => Promise<ItemLista[] | null>;
   agregar: (obra: Obra) => Promise<void>;
   actualizar: (itemId: string, cambios: CambiosItem) => Promise<void>;
   eliminar: (itemId: string) => Promise<void>;
+  fecharVistas: (cambios: { itemId: string; vistaEn: number }[]) => Promise<void>; // D2
+  completarObra: (itemId: string, datos: DatosTmdb) => Promise<void>; // D6
 }
 
 const CarteleraContext = createContext<ValorCartelera | null>(null);
@@ -94,18 +97,22 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
     };
   }, [uid]);
 
-  const recargar = useCallback(async () => {
-    if (!uid) return;
+  const recargar = useCallback(async (): Promise<ItemLista[] | null> => {
+    if (!uid) return null;
     setCargandoLista(true);
     try {
-      fijarLista(await listaService.obtener(uid), uid);
+      const items = await listaService.obtener(uid);
+      if (uidRef.current !== uid) return null; // la respuesta es de una cuenta anterior
+      fijarLista(items, uid);
       setSinConexion(false);
       setErrorLista(null);
+      return items;
     } catch (error) {
       // En los dos casos se mantiene la última copia y no se escribe nada.
       const sinRed = error instanceof SinConexionError; // también si la lista vino de la caché (P17, H1)
       setSinConexion(sinRed);
       setErrorLista(sinRed ? null : 'Vuelve a intentarlo en un momento.'); // H12
+      return null;
     } finally {
       setCargandoLista(false);
     }
@@ -202,6 +209,43 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
     [mutar],
   );
 
+  /** D2: pone vistaEn = actualizadoEn a las obras vistas sin fecha. Como toda escritura, cambia actualizadoEn (P10). */
+  const fecharVistas = useCallback(
+    async (cambios: { itemId: string; vistaEn: number }[]) => {
+      if (cambios.length === 0) return;
+      const porId = new Map(cambios.map((c) => [c.itemId, c.vistaEn]));
+      const ahora = Date.now();
+      const nueva = listaRef.current.map((i) => {
+        const vistaEn = porId.get(i.id);
+        return vistaEn === undefined ? i : { ...i, vistaEn, actualizadoEn: ahora };
+      });
+      await mutar(nueva, async (u) => {
+        await Promise.all(cambios.map((c) => listaService.fecharVista(u, c.itemId, c.vistaEn)));
+      });
+    },
+    [mutar],
+  );
+
+  /** D6: guarda los datos de TMDB de una obra que nunca se completó. */
+  const completarObra = useCallback(
+    async (itemId: string, datos: DatosTmdb) => {
+      const ahora = Date.now();
+      const nueva = listaRef.current.map((i) =>
+        i.id === itemId
+          ? {
+              ...i,
+              generos: datos.generos,
+              duracionMin: datos.duracionMin,
+              directores: datos.directores,
+              actualizadoEn: ahora,
+            }
+          : i,
+      );
+      await mutar(nueva, (u) => listaService.completarDatos(u, itemId, datos));
+    },
+    [mutar],
+  );
+
   const valor = useMemo(
     () => ({
       usuario,
@@ -215,6 +259,8 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
       agregar,
       actualizar,
       eliminar,
+      fecharVistas,
+      completarObra,
     }),
     [
       usuario,
@@ -228,6 +274,8 @@ export function CarteleraProvider({ children }: { children: ReactNode }) {
       agregar,
       actualizar,
       eliminar,
+      fecharVistas,
+      completarObra,
     ],
   );
 

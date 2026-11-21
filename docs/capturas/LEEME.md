@@ -28,6 +28,12 @@ Copia esta carpeta en `docs/capturas/` del repositorio.
 | 22 | 22-h3-p14-t06-a13-vista-otra-vez-nueva-fecha.png | H3 · Paso 14 · T-06 | Viendo → Vista: `vistaEn` con una hora nueva (CA-A.1.3). Documento con los 4 campos nuevos |
 | 23 | 23-h3-p14-t06-a14-comentario-mantiene-vistaen.png | H3 · Paso 14 · T-06 | Vista → Vista con otro comentario: cambia `actualizadoEn`, `vistaEn` se mantiene (CA-A.1.4) |
 | 24 | 24-h3-p14-t07a-h1-sin-conexion-muestra-copia.png | H3 · Paso 14 · T-07a | Modo avión: Mi lista muestra la copia guardada (5 títulos) y el aviso de sin conexión, no la lista vacía (H1, P17) |
+| 25 | 25-h3-p14-t07b-antes-obra-sin-vistaen-ni-datos.png | H3 · Paso 14 · T-07b | Antes: obra "vista" (Los Juegos del Hambre: Amanecer en la cosecha) sin `vistaEn` ni los 3 campos de TMDB; `actualizadoEn` 2:53:45 PM |
+| 26 | 26-h3-p14-t07b-antes-interestelar-sin-vistaen.png | H3 · Paso 14 · T-07b | Antes: Interestelar "vista" sin `vistaEn`; `actualizadoEn` 5:41:51 PM |
+| 27 | 27-h3-p14-t07b-d2-y-d6-completan-la-obra.png | H3 · Paso 14 · T-07b | Después: D2 pone `vistaEn` = 2:53:45 PM y D6 completa géneros, duración y director (CA-A.4.11, CA-A.4.5) |
+| 28 | 28-h3-p14-t07b-sonda-progreso-d6.png | H3 · Paso 14 · T-07b | Sonda temporal: progreso de D6 "0 de 2 → 1 de 2 → null"; `obrasSinDatos` 2 → 0 y `obrasSinFecha` 3 → 0 (CA-A.4.6) |
+| 29 | 29-h3-p14-t07b-d2-vistaen-igual-actualizadoen.png | H3 · Paso 14 · T-07b | Después: Interestelar con `vistaEn` = su `actualizadoEn` anterior (5:41:51 PM) y `actualizadoEn` nuevo (CA-A.4.1, CA-A.4.5) |
+| 30 | 30-h3-p14-t07b-sonda-segunda-apertura-sin-migrar.png | H3 · Paso 14 · T-07b | Segunda apertura: ya no hay nada que fechar ni completar, sin progreso (CA-A.4.2) |
 
 Nota: en las capturas 12 y 13 el editor muestra "unpublished changes" porque las dos
 comprobaciones de `request.time` se desactivaron solo en el simulador; no se publicaron.

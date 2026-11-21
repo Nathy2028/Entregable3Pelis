@@ -116,6 +116,43 @@ export async function eliminar(uid: string, itemId: string): Promise<void> {
   await conTiempoMaximo(deleteDoc(doc(coleccion(uid), itemId)));
 }
 
+// ---------- Migraciones (D2, D6) ----------
+
+/** D2: fecha una obra vista que no tenía vistaEn. Como toda escritura, actualiza actualizadoEn (P10). */
+export async function fecharVista(uid: string, itemId: string, ms: number): Promise<void> {
+  await conTiempoMaximo(
+    updateDoc(doc(coleccion(uid), itemId), {
+      vistaEn: Timestamp.fromMillis(ms),
+      actualizadoEn: serverTimestamp(),
+    }),
+  );
+}
+
+/** D6: los 3 campos de TMDB, siempre juntos (P9) y campo por campo, porque las reglas usan hasOnly (P10). */
+export async function completarDatos(uid: string, itemId: string, datos: DatosTmdb): Promise<void> {
+  await conTiempoMaximo(
+    updateDoc(doc(coleccion(uid), itemId), {
+      generos: datos.generos,
+      duracionMin: datos.duracionMin,
+      directores: datos.directores,
+      actualizadoEn: serverTimestamp(),
+    }),
+  );
+}
+
+// ---------- Obras que TMDB ya no tiene (P7) ----------
+
+const claveDescartadas = (uid: string) => `cartelera:sinTmdb:${uid}`;
+
+/** itemIds que respondieron 404 en TMDB: D6 no los vuelve a pedir. */
+export async function leerDescartadas(uid: string): Promise<Set<string>> {
+  const guardadas = await leerCache<unknown>(claveDescartadas(uid));
+  return new Set(Array.isArray(guardadas) ? guardadas.filter((x): x is string => typeof x === 'string') : []);
+}
+
+export const guardarDescartadas = (uid: string, ids: ReadonlySet<string>) =>
+  guardarCache(claveDescartadas(uid), [...ids]);
+
 // ---------- Copia local (RF8) ----------
 
 const claveCache = (uid: string) => `cartelera:lista:${uid}`;
