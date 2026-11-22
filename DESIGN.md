@@ -21,9 +21,9 @@ La app es **íntima, editorial y enérgica**, y al ver su año el usuario siente
 
 ## 2. Tokens
 
-**Dónde viven:** en `src/tema/`, la única fuente de verdad de colores, espacios y tamaños. Hasta el ticket T-08
-todavía están en `src/theme.ts` y se usan con `useTema()` (`color`, `texto`, `escala`), más `radio`, `MARGEN` y
-`TOQUE`. Fuera de esos archivos no se escribe ningún valor fijo. Los nombres son los mismos que usa el board.
+**Dónde viven:** en `src/tema/`, la única fuente de verdad de colores, espacios y tamaños. Se usan con `useTema()`
+(`color`, `texto`, `escala`, `estado`), más `radio`, `MARGEN`, `TOQUE`, `espacio` y `EFECTOS`. Fuera de
+`src/tema/` no se escribe ningún valor fijo. Los nombres son los mismos que usa el board.
 
 ### Paleta
 
@@ -56,6 +56,19 @@ igual.
 | `estadoViendo` | `acentoSuave`                        | `acento`          | 11,9 : 1 (9,2)                     |
 | `estadoPorVer` | `superficieAlta` (con borde `borde`) | `textoSecundario` | 6,8 : 1 (13,2)                     |
 | `error`        | `peligroSuave`                       | `peligro`         | 6,2 : 1 · texto blanco encima 14,2 |
+
+### Efectos (nuevos como tokens)
+
+Transparencias y degradados que no son colores de la paleta. Viven en `EFECTOS` (`src/tema/`), son iguales en alto
+contraste y tienen los valores que ya usaba la app. No están en el board: los aprobó la usuaria el 21/11/2026.
+
+| Token               | Valor                                                                                   | Uso                                           |
+| ------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `contornoAcento`    | `rgba(212, 255, 58, 0.4)`                                                               | Borde de la etiqueta "contorno" sobre pósters |
+| `brilloAcento`      | `0px 8px 24px rgba(212, 255, 58, 0.22)`                                                 | Sombra del botón primario                     |
+| `degradado.hero`    | `rgba(10, 10, 10, 0.5)` 0 % → `rgba(10, 10, 10, 0.2)` 45 % → `fondo` 100 %              | Velo de la foto de portada (Login)            |
+| `degradado.poster`  | `rgba(10,10,10,0.35)` 0 % → `rgba(10,10,10,0)` 30 % y 65 % → `rgba(10,10,10,0.8)` 100 % | Velo de los pósters en Buscar                 |
+| `degradado.portada` | `rgba(10,10,10,0.15)` 0 % → `rgba(10,10,10,0.7)` 100 %                                  | Velo de la portada en Editar                  |
 
 ### Tipografía
 
@@ -270,7 +283,7 @@ Los estados y el error están en la sección 2.
 
 | Sí                                                                                                | No                                                                          |
 | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Usar los tokens de `src/tema/` (hasta T-08, los de `src/theme.ts` con `useTema()`)                | Escribir colores en hexadecimal o rgba fuera de `src/tema/`                 |
+| Usar los tokens de `src/tema/`                                                                    | Escribir colores en hexadecimal o rgba fuera de `src/tema/`                 |
 | Construir las barras por mes con `View`                                                           | Usar librerías de gráficas                                                  |
 | Usar `acento` solo para lo importante (acción principal, dato destacado, pestaña activa, mes top) | Usar `acento` en la atribución de TMDB o ponerla junto al logotipo de Cinta |
 | Multiplicar cada tamaño de letra por `escala`                                                     | Escribir tamaños de letra fijos                                             |

@@ -23,7 +23,7 @@ personal (por ver / viendo / vista), con calificación y comentario.
 | `src/components/` | Componentes de interfaz reutilizables |
 | `src/utils/` | Utilidades generales |
 | `src/dominio/` *(nueva)* | Funciones puras con las reglas del negocio: sin Firebase, sin React y sin `new Date()` (la fecha llega como parámetro) |
-| `src/tema/` *(nueva)* | Única fuente de colores, espacios y tamaños. Fuera de aquí no se escriben valores fijos. `src/theme.ts` solo reexporta desde `src/tema/` y se retira en T-11. |
+| `src/tema/` *(nueva)* | Única fuente de colores, espacios y tamaños. Fuera de aquí no se escriben valores fijos. `src/theme.ts` se retiró en T-11: todo se importa de `src/tema/`. |
 
 ## 3. Navegación
 
@@ -67,7 +67,7 @@ Antes de crear o modificar cualquier archivo en src/screens/ o src/components/, 
 Un sensor nunca se desactiva, se salta ni se borra. Solo se permite hacer commit con tests en rojo en estos dos
 casos, y solo con confirmación de la usuaria:
 
-- **a)** El test de colores fijos (`src/tema/coloresFijos.test.ts`), desde su creación hasta el ticket T-11 del
+- **a)** _(cerrado con T-11: el test de colores fijos pasa)_ El test de colores fijos (`src/tema/coloresFijos.test.ts`), desde su creación hasta el ticket T-11 del
   backlog (Hito 4), siempre que solo falle por archivos que ya tenían colores fijos. Esos archivos son:
   `src/components/ui.tsx`, `src/context/AccesibilidadContext.tsx`, `src/screens/BuscarScreen.tsx` y
   `src/screens/EditarScreen.tsx`. Si el test marca cualquier otro archivo, no aplica este caso.
