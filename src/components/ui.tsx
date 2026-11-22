@@ -29,7 +29,7 @@ import {
 } from 'react-native';
 import { useEstilos, useTema } from '../context/AccesibilidadContext';
 import { cerrarSesion } from '../services/authService';
-import { MARGEN, radio, TOQUE, type Tema } from '../theme';
+import { EFECTOS, MARGEN, radio, TOQUE, type Tema } from '../tema';
 
 export type { LucideIconName };
 
@@ -192,7 +192,7 @@ export function Etiqueta({ texto: t, tono = 'suave' }: { texto: string; tono?: T
     acento: { fondo: { backgroundColor: color.acento }, tinta: color.sobreAcento },
     suave: { fondo: { backgroundColor: color.acentoSuave }, tinta: color.acento },
     contorno: {
-      fondo: { backgroundColor: color.velo, borderColor: 'rgba(212, 255, 58, 0.4)' },
+      fondo: { backgroundColor: color.velo, borderColor: EFECTOS.contornoAcento },
       tinta: color.acento,
     },
     neutro: { fondo: { backgroundColor: color.superficieAlta }, tinta: color.textoSecundario },
@@ -528,7 +528,7 @@ const estilos = ({ color }: Tema) =>
     botonPrimario: { backgroundColor: color.acento },
     primarioInactivo: { backgroundColor: color.superficieAlta },
     botonSecundario: { backgroundColor: color.superficie, borderWidth: 1, borderColor: color.borde },
-    brillo: { boxShadow: '0px 8px 24px rgba(212, 255, 58, 0.22)' },
+    brillo: { boxShadow: EFECTOS.brilloAcento },
     botonTexto: { fontSize: 16, fontWeight: '700' },
 
     iconoBoton: {
@@ -654,7 +654,7 @@ const estilos = ({ color }: Tema) =>
 
     hero: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
     heroVelo: {
-      experimental_backgroundImage: `linear-gradient(180deg, rgba(10, 10, 10, 0.5) 0%, rgba(10, 10, 10, 0.2) 45%, ${color.fondo} 100%)`,
+      experimental_backgroundImage: EFECTOS.degradado.hero(color.fondo),
     },
 
     avatar: {

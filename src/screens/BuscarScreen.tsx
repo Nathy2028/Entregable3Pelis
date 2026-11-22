@@ -19,7 +19,7 @@ import { useCartelera } from '../context/CarteleraContext';
 import type { PropsPestana } from '../navigation';
 import { crearItemId } from '../services/listaService';
 import { buscar } from '../services/tmdbService';
-import { MARGEN, radio, TOQUE, type Tema } from '../theme';
+import { EFECTOS, MARGEN, radio, TOQUE, type Tema } from '../tema';
 import type { EstadoPeticion, PaginaBusqueda, ResultadoBusqueda } from '../types';
 
 const ESPACIO = 14;
@@ -314,7 +314,7 @@ const estilos = ({ color }: Tema) =>
       ...StyleSheet.absoluteFill,
       borderRadius: radio.m,
       experimental_backgroundImage:
-        'linear-gradient(180deg, rgba(10,10,10,0.35) 0%, rgba(10,10,10,0) 30%, rgba(10,10,10,0) 65%, rgba(10,10,10,0.8) 100%)',
+        EFECTOS.degradado.poster,
     },
     posterArriba: {
       position: 'absolute',

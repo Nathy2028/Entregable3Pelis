@@ -40,9 +40,10 @@ Copia esta carpeta en `docs/capturas/` del repositorio.
 | 34 | 34-h4-p16-t09-mi-anio-barras-y-destacada.png | H4 · Paso 16 · T-09 | 12 barras con "Pico: noviembre" y la obra destacada con póster, estrellas y fecha (CA-A.2.25, CA-A.2.27). Al desplazar, el contenido pasaba bajo la barra de estado: se corrigió antes del commit |
 | 35 | 35-h4-p16-t10-mi-anio-sin-datos-1.mp4 | H4 · Paso 16 · T-10 | Video: cómo se ve "Mi año en cine" cuando no hay datos |
 | 36 | 36-h4-p16-t10-mi-anio-sin-datos-2.mp4 | H4 · Paso 16 · T-10 | Video: cómo se ve "Mi año en cine" cuando no hay datos (segunda prueba) |
+| 37 | 37-h4-p16-t11-npm-test-todo-en-verde.png | H4 · Paso 16 · T-11 | Salida de `npm test` todo en verde: 7 archivos y 85 tests, incluido el de colores fijos (caso a cerrado) |
 
 Nota: en las capturas 12 y 13 el editor muestra "unpublished changes" porque las dos
 comprobaciones de `request.time` se desactivaron solo en el simulador; no se publicaron.
 
-Pendientes para la entrega final: resumen con datos, resumen vacío y la salida de npm test
-en verde (T-11). El documento de mi_lista con los 4 campos nuevos ya está en las capturas 22 y 23.
+Pendientes para la entrega final: ninguno. Resumen con datos: 33 y 34; sin datos: 35 y 36; npm test en
+verde: 37; documento de mi_lista con los 4 campos nuevos: 22 y 23.

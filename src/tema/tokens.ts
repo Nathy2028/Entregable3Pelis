@@ -40,6 +40,22 @@ export const PALETA_CONTRASTE: Paleta = {
   barraInactiva: '#5A5E47',
 };
 
+/**
+ * Transparencias y degradados que no son colores de la paleta (DESIGN.md, "Efectos"). Son iguales en alto contraste
+ * y tienen los valores que ya usaba la app. Van fuera de PALETA: no están en el brand board.
+ */
+export const EFECTOS = {
+  contornoAcento: 'rgba(212, 255, 58, 0.4)', // borde de la etiqueta "contorno" sobre pósters
+  brilloAcento: '0px 8px 24px rgba(212, 255, 58, 0.22)', // sombra del botón primario
+  degradado: {
+    hero: (fondo: string) =>
+      `linear-gradient(180deg, rgba(10, 10, 10, 0.5) 0%, rgba(10, 10, 10, 0.2) 45%, ${fondo} 100%)`,
+    poster:
+      'linear-gradient(180deg, rgba(10,10,10,0.35) 0%, rgba(10,10,10,0) 30%, rgba(10,10,10,0) 65%, rgba(10,10,10,0.8) 100%)',
+    portada: 'linear-gradient(180deg, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.7) 100%)',
+  },
+};
+
 /** esp-xs … esp-xxl. Entre tarjetas 12 (m), margen lateral 20 (margen), entre tocables 8 (s). */
 export const espacio = { xs: 4, s: 8, m: 12, l: 16, margen: 20, xl: 24, xxl: 32 };
 
