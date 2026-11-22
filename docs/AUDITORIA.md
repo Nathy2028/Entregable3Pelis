@@ -66,6 +66,8 @@ Método: lectura completa de `src/`, `firestore.rules`, `app.json`, `package.jso
 
 21/11/2026 — La spec 01 incluye en su alcance H1, H7, H9 y H12.
 
+21/11/2026 — T-11: H7 cerrado; el test de colores fijos pasa y se cierra el caso a de Tests en rojo esperados.
+
 ## 4. Cierre
 
 Pendiente: se completa en el Hito 4.
